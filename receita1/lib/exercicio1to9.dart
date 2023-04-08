@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-void main() {
+void exercicio1to9() {
   MaterialApp app = MaterialApp(
     theme: ThemeData(primarySwatch: Colors.blue),
     home: Scaffold(
