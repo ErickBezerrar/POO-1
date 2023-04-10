@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
 
-class NewBody1 extends StatelessWidget {
-  Cervejas();
-
-}
 
 class NewNavBar extends StatelessWidget {
   NewNavBar();
@@ -37,6 +33,31 @@ class NewNavBar extends StatelessWidget {
     ]);
   }
 }
+
+
+class NewScaffold extends StatelessWidget {
+  NewScaffold();
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Expanded(
+          child: Text("La Fin Du Monde - Bock - 65 ibu"),
+        ),
+        Expanded(
+          child: Text("Sapporo Premiume - Sour Ale - 54 ibu"),
+        ),
+        Expanded(
+          child: Text("Duvel - Pilsner - 82 ibu"),
+        ),
+      ],
+      bottomNavigationBar: NewNavBar(),
+    );
+  }
+}
+
+
 
 void receita2() {
   MaterialApp app = MaterialApp(
