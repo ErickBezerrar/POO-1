@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 
+class NewBody1 extends StatelessWidget {
+  Cervejas();
+
+}
+
 class NewNavBar extends StatelessWidget {
   NewNavBar();
 
@@ -9,19 +14,31 @@ class NewNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    
     return BottomNavigationBar(onTap: botaoFoiTocado, items: const [
+
       BottomNavigationBarItem(
+
         label: "Cafés",
         icon: Icon(Icons.coffee_outlined),
       ),
+
       BottomNavigationBarItem(
-          label: "Cervejas", icon: Icon(Icons.local_drink_outlined)),
-      BottomNavigationBarItem(label: "Nações", icon: Icon(Icons.flag_outlined))
+
+        label: "Cervejas", 
+        icon: Icon(Icons.local_drink_outlined)
+      ),
+
+      BottomNavigationBarItem(
+
+        label: "Nações", 
+        icon: Icon(Icons.flag_outlined)
+      )
     ]);
   }
 }
 
-void main() {
+void receita2() {
   MaterialApp app = MaterialApp(
       theme: ThemeData(primarySwatch: Colors.deepPurple),
       home: Scaffold(
