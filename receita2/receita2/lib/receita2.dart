@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
 
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      theme: ThemeData(primarySwatch: Colors.deepPurple),
+      home: NewScaffold(),
+    );
+  }
+}
 
 class NewNavBar extends StatelessWidget {
-  NewNavBar();
+  const NewNavBar();
 
   void botaoFoiTocado(int index) {
     print("Tocaram no botão $index");
@@ -10,73 +19,83 @@ class NewNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
-    return BottomNavigationBar(onTap: botaoFoiTocado, items: const [
-
-      BottomNavigationBarItem(
-
-        label: "Cafés",
-        icon: Icon(Icons.coffee_outlined),
-      ),
-
-      BottomNavigationBarItem(
-
-        label: "Cervejas", 
-        icon: Icon(Icons.local_drink_outlined)
-      ),
-
-      BottomNavigationBarItem(
-
-        label: "Nações", 
-        icon: Icon(Icons.flag_outlined)
-      )
-    ]);
-  }
-}
-
-
-class NewScaffold extends StatelessWidget {
-  NewScaffold();
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          child: Text("La Fin Du Monde - Bock - 65 ibu"),
+    return BottomNavigationBar(
+      onTap: botaoFoiTocado,
+      items: const [
+        BottomNavigationBarItem(
+          label: "Cafés",
+          icon: Icon(Icons.coffee_outlined),
         ),
-        Expanded(
-          child: Text("Sapporo Premiume - Sour Ale - 54 ibu"),
+        BottomNavigationBarItem(
+          label: "Cervejas",
+          icon: Icon(Icons.local_drink_outlined),
         ),
-        Expanded(
-          child: Text("Duvel - Pilsner - 82 ibu"),
+        BottomNavigationBarItem(
+          label: "Nações",
+          icon: Icon(Icons.flag_outlined),
         ),
       ],
-      bottomNavigationBar: NewNavBar(),
     );
   }
 }
 
+class MyBodyBox extends StatelessWidget {
+  final Widget child;
 
+  const MyBodyBox({required this.child});
 
-void receita2() {
-  MaterialApp app = MaterialApp(
-      theme: ThemeData(primarySwatch: Colors.deepPurple),
-      home: Scaffold(
-        appBar: AppBar(title: Text("Dicas")),
-        body: Column(children: [
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 5,
+            blurRadius: 7,
+            offset: const Offset(0, 3),
+          ),
+        ],
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: child,
+    );
+  }
+}
+
+class NewScaffold extends StatelessWidget {
+  const NewScaffold();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("Dicas")),
+      body: Column(
+        children: [
           Expanded(
-            child: Text("La Fin Du Monde - Bock - 65 ibu"),
+            child: MyBodyBox(
+              child: const Text("La Fin Du Monde - Bock - 65 ibu"),
+            ),
           ),
           Expanded(
-            child: Text("Sapporo Premiume - Sour Ale - 54 ibu"),
+            child: MyBodyBox(
+              child: const Text("Sapporo Premiume - Sour Ale - 54 ibu"),
+            ),
           ),
           Expanded(
-            child: Text("Duvel - Pilsner - 82 ibu"),
+            child: MyBodyBox(
+              child: const Text("Duvel - Pilsner - 82 ibu"),
+            ),
           )
-        ]),
-        bottomNavigationBar: NewNavBar(),
-      ));
+        ],
+      ),
+      bottomNavigationBar: const NewNavBar(),
+    );
+  }
+}
 
-  runApp(app);
+void main() {
+  runApp(MyApp());
 }
