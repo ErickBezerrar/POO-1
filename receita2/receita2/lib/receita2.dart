@@ -1,37 +1,30 @@
 import 'package:flutter/material.dart';
 
 class NewNavBar extends StatelessWidget {
-  NewNavBar();
+  final List<IconData> icons;
+  final List<String> labels;
+  final void Function(int) onItemSelected;
 
-  void botaoFoiTocado(int index) {
-    print("Tocaram no botão $index");
-  }
+  NewNavBar({
+    required this.icons,
+    required this.labels,
+    required this.onItemSelected,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return BottomNavigationBar(onTap: botaoFoiTocado, items: const [
-
-      BottomNavigationBarItem(
-
-        label: "Cafés",
-        icon: Icon(Icons.coffee_outlined),
-
-      ),
-
-      BottomNavigationBarItem(
-
-        label: "Cervejas", 
-        icon: Icon(Icons.local_drink_outlined)
-
-      ),
-
-      BottomNavigationBarItem(
-
-        label: "Nações", 
-        icon: Icon(Icons.flag_outlined)
-
-      )
-    ]);
+    return BottomNavigationBar(
+      onTap: onItemSelected,
+      items: icons.asMap().entries.map((entry) {
+        final index = entry.key;
+        final icon = entry.value;
+        final label = labels[index];
+        return BottomNavigationBarItem(
+          icon: Icon(icon),
+          label: label,
+        );
+      }).toList(),
+    );
   }
 }
 
@@ -40,7 +33,8 @@ class NovoEscafold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center, // adiciona centralização horizontal
+      mainAxisAlignment:
+          MainAxisAlignment.center, // adiciona centralização horizontal
       children: [
         Expanded(
           child: Center(
@@ -63,7 +57,23 @@ class NovoEscafold extends StatelessWidget {
 }
 
 class MyApp extends StatelessWidget {
+  final List<IconData> navBarIcons = [
+    Icons.coffee_outlined,
+    Icons.local_drink_outlined,
+    Icons.flag_outlined,
+  ];
+  final List<String> navBarLabels = [
+    'Café',
+    'Bebidas',
+    'Países',
+  ];
+
   MyApp();
+
+  void _onNavBarItemSelected(int index) {
+    print("Outlier: $index");
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -73,7 +83,11 @@ class MyApp extends StatelessWidget {
           title: Text('Tudo sobre'),
         ),
         body: NovoEscafold(),
-        bottomNavigationBar: NewNavBar(),
+        bottomNavigationBar: NewNavBar(
+          icons: navBarIcons,
+          labels: navBarLabels,
+          onItemSelected: _onNavBarItemSelected,
+        ),
       ),
     );
   }
