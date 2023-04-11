@@ -57,15 +57,20 @@ class NovoEscafold extends StatelessWidget {
 }
 
 class MyApp extends StatelessWidget {
+
   final List<IconData> navBarIcons = [
+
     Icons.coffee_outlined,
     Icons.local_drink_outlined,
     Icons.flag_outlined,
+
   ];
   final List<String> navBarLabels = [
+
     'Café',
     'Bebidas',
     'Países',
+    
   ];
 
   MyApp();
