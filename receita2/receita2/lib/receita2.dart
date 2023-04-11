@@ -67,10 +67,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Dicas',
+      title: 'Tudo sobre',
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Dicas'),
+          title: Text('Tudo sobre'),
         ),
         body: NovoEscafold(),
         bottomNavigationBar: NewNavBar(),
