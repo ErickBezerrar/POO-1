@@ -116,3 +116,49 @@ class DataBodyWidget extends StatelessWidget {
   }
 
 }
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Menu Lateral'),
+        ),
+        drawer: Drawer(
+          child: ListView(
+            children: <Widget>[
+              DrawerHeader(
+                child: Text('Escolha uma cor'),
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                ),
+              ),
+              ListTile(
+                title: Text('Azul'),
+                onTap: () {
+                  Navigator.pop(context, Colors.blue);
+                },
+              ),
+              ListTile(
+                title: Text('Verde'),
+                onTap: () {
+                  Navigator.pop(context, Colors.green);
+                },
+              ),
+              ListTile(
+                title: Text('Vermelho'),
+                onTap: () {
+                  Navigator.pop(context, Colors.red);
+                },
+              ),
+            ],
+          ),
+        ),
+        body: Center(
+          child: Text('Selecione uma cor no menu lateral.'),
+        ),
+      ),
+    );
+  }
+}
