@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
         appBar: CustomAppBar(title: 'Dicas', menuItems: <PopupMenuEntry<Color>>[
 
                 PopupMenuItem<Color>(
-                  value: Colors.blue,
+                  value: Colors.black,
                   child: Text('Black'),
                 ),
                 PopupMenuItem<Color>(
