@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
 
@@ -14,14 +15,8 @@ class MyApp extends StatelessWidget {
 
       home: Scaffold(
 
-        appBar: AppBar(
-          title: const Text("Dicas"),
-          actions: <Widget>[
-            PopupMenuButton<Color>(
-              onSelected: (color) {
-                // Faça algo com a cor selecionada
-              },
-              itemBuilder: (BuildContext context) => <PopupMenuEntry<Color>>[
+        appBar: CustomAppBar(title: 'Dicas', menuItems: <PopupMenuEntry<Color>>[
+
                 PopupMenuItem<Color>(
                   value: Colors.blue,
                   child: Text('Black'),
@@ -36,8 +31,6 @@ class MyApp extends StatelessWidget {
                 ),
               ],
             ),
-          ],
-        ),
 
         body: DataBodyWidget(objects:[
           "La Fin Du Monde - Bock - 65 ibu",
@@ -55,74 +48,75 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class NewNavBar extends StatelessWidget {
+class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final String title;
+  final List<PopupMenuEntry<Color>> menuItems;
+  final AppBar appBar = AppBar();
 
+  CustomAppBar({required this.title, required this.menuItems});
+
+  @override
+  Widget build(BuildContext context) {
+    return AppBar(
+      title: Text(title),
+      actions: <Widget>[
+        PopupMenuButton<Color>(
+          onSelected: (color) {
+            // Faça algo com a cor selecionada
+          },
+          itemBuilder: (BuildContext context) => menuItems,
+        ),
+      ],
+    );
+  }
+
+  @override
+  Size get preferredSize => Size.fromHeight(appBar.preferredSize.height);
+}
+
+class NewNavBar extends StatelessWidget {
   final List<IconData> icons;
 
   NewNavBar({required this.icons});
 
   void botaoFoiTocado(int index) {
-
     print("Tocaram no botão $index");
-
   }
 
   @override
-
   Widget build(BuildContext context) {
-
     return BottomNavigationBar(
-
       onTap: botaoFoiTocado,
-
       items: List.generate(
-
         icons.length,
-
         (index) => BottomNavigationBarItem(
-
           icon: Icon(icons[index]),
-
           label: '',
-
         ),
       ),
     );
   }
 }
 
-
 class DataBodyWidget extends StatelessWidget {
-
   List<String> objects;
 
-  DataBodyWidget( {this.objects = const [] });
+  DataBodyWidget({this.objects = const []});
 
-  Expanded processarUmElemento(String obj){
-
-    return Expanded(                
-
-          child: Center(child: Text(obj)),
-
-        );
-
+  Expanded processarUmElemento(String obj) {
+    return Expanded(
+      child: Center(child: Text(obj)),
+    );
   }
 
   @override
-
   Widget build(BuildContext context) {
-
-    return Column(children: objects.map( 
-
-      (obj) => Expanded(
-
-        child: Center(child: Text(obj)),
-
-        )
-
-      ).toList());
-
+    return Column(
+      children: objects.map(
+        (obj) => Expanded(
+          child: Center(child: Text(obj)),
+        ),
+      ).toList(),
+    );
   }
-
 }
-
