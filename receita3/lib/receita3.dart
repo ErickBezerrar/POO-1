@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-void main() => runApp(MyApp());
-
 
 class MyApp extends StatelessWidget {
 
@@ -26,15 +24,15 @@ class MyApp extends StatelessWidget {
               itemBuilder: (BuildContext context) => <PopupMenuEntry<Color>>[
                 PopupMenuItem<Color>(
                   value: Colors.blue,
-                  child: Text('Azul'),
+                  child: Text('Black'),
                 ),
                 PopupMenuItem<Color>(
                   value: Colors.green,
-                  child: Text('Verde'),
+                  child: Text('Green'),
                 ),
                 PopupMenuItem<Color>(
                   value: Colors.red,
-                  child: Text('Vermelho'),
+                  child: Text('Red'),
                 ),
               ],
             ),
