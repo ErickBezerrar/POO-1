@@ -6,10 +6,8 @@ void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
 
   @override
-
   Widget build(BuildContext context) {
 
-    
     return MaterialApp(
 
       theme: ThemeData(primarySwatch: Colors.deepPurple),
@@ -18,32 +16,45 @@ class MyApp extends StatelessWidget {
 
       home: Scaffold(
 
-        appBar: AppBar( 
-
+        appBar: AppBar(
           title: const Text("Dicas"),
-
-          ),
+          actions: <Widget>[
+            PopupMenuButton<Color>(
+              onSelected: (color) {
+                // Faça algo com a cor selecionada
+              },
+              itemBuilder: (BuildContext context) => <PopupMenuEntry<Color>>[
+                PopupMenuItem<Color>(
+                  value: Colors.blue,
+                  child: Text('Azul'),
+                ),
+                PopupMenuItem<Color>(
+                  value: Colors.green,
+                  child: Text('Verde'),
+                ),
+                PopupMenuItem<Color>(
+                  value: Colors.red,
+                  child: Text('Vermelho'),
+                ),
+              ],
+            ),
+          ],
+        ),
 
         body: DataBodyWidget(objects:[
-
           "La Fin Du Monde - Bock - 65 ibu",
-
           "Sapporo Premiume - Sour Ale - 54 ibu",
-
           "Duvel - Pilsner - 82 ibu"
-
         ]),
 
-        bottomNavigationBar: NewNavBar(icons: 
-        [
+        bottomNavigationBar: NewNavBar(icons: [
           Icons.coffee_outlined,
           Icons.local_drink_outlined,
           Icons.flag_outlined,
         ]),
-      ));
-
+      ),
+    );
   }
-
 }
 
 class NewNavBar extends StatelessWidget {
@@ -117,50 +128,3 @@ class DataBodyWidget extends StatelessWidget {
 
 }
 
-
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text('Menu Lateral'),
-        ),
-        drawer: Drawer(
-          child: ListView(
-            children: <Widget>[
-              DrawerHeader(
-                child: Text('Escolha uma cor'),
-                decoration: BoxDecoration(
-                  color: Colors.blue,
-                ),
-              ),
-              ListTile(
-                title: Text('Azul'),
-                onTap: () {
-                  Navigator.pop(context, Colors.blue);
-                },
-              ),
-              ListTile(
-                title: Text('Verde'),
-                onTap: () {
-                  Navigator.pop(context, Colors.green);
-                },
-              ),
-              ListTile(
-                title: Text('Vermelho'),
-                onTap: () {
-                  Navigator.pop(context, Colors.red);
-                },
-              ),
-            ],
-          ),
-        ),
-        body: Center(
-          child: Text('Selecione uma cor no menu lateral.'),
-        ),
-      ),
-    );
-  }
-}
