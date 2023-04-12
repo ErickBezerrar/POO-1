@@ -1,17 +1,6 @@
 import 'package:flutter/material.dart';
 
-
-
-void main() {
-
-  MyApp app = MyApp();
-
-  runApp(app);
-
-}
-
-
-
+void main() => runApp(MyApp());
 
 
 class MyApp extends StatelessWidget {
@@ -21,7 +10,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
 
     
-
     return MaterialApp(
 
       theme: ThemeData(primarySwatch: Colors.deepPurple),
@@ -58,28 +46,36 @@ class MyApp extends StatelessWidget {
 
 }
 
-
-
-
-
 class NewNavBar extends StatelessWidget {
+
   final List<IconData> icons;
 
   NewNavBar({required this.icons});
 
   void botaoFoiTocado(int index) {
+
     print("Tocaram no botão $index");
+
   }
 
   @override
+
   Widget build(BuildContext context) {
+
     return BottomNavigationBar(
+
       onTap: botaoFoiTocado,
+
       items: List.generate(
+
         icons.length,
+
         (index) => BottomNavigationBarItem(
+
           icon: Icon(icons[index]),
+
           label: '',
+
         ),
       ),
     );
@@ -93,8 +89,6 @@ class DataBodyWidget extends StatelessWidget {
 
   DataBodyWidget( {this.objects = const [] });
 
-
-
   Expanded processarUmElemento(String obj){
 
     return Expanded(                
@@ -104,8 +98,6 @@ class DataBodyWidget extends StatelessWidget {
         );
 
   }
-
-
 
   @override
 
