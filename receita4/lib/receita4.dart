@@ -10,11 +10,11 @@ class MyApp extends StatelessWidget {
 
     return MaterialApp(
 
-      title: 'Flutter Demo',
+      title: 'Starbucks Cardápio',
 
       theme: ThemeData(
 
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.green,
 
       ),
 
