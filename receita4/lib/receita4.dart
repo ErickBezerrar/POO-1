@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
 
       ),
 
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(title: 'Starbucks'),
 
     );
   }
@@ -36,17 +36,21 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final dataObjects = [    
-    {"name": "Cerveja 1", "style": "Estilo 1", "ibu": "10"},
-    {"name": "Cerveja 2", "style": "Estilo 2", "ibu": "20"},    
-    {"name": "Cerveja 3", "style": "Estilo 3", "ibu": "30"},    
-    {"name": "Cerveja 4", "style": "Estilo 4", "ibu": "40"},    
-    {"name": "Cerveja 5", "style": "Estilo 5", "ibu": "50"},    
-    {"name": "Cerveja 6", "style": "Estilo 6", "ibu": "60"},    
-    {"name": "Cerveja 7", "style": "Estilo 7", "ibu": "70"},    
-    {"name": "Cerveja 8", "style": "Estilo 8", "ibu": "80"},    
-    {"name": "Cerveja 9", "style": "Estilo 9", "ibu": "90"},    
-    {"name": "Cerveja 10", "style": "Estilo 10", "ibu": "100"},  
+  final dataObjects = [
+
+    {"name": "Café Latte", "style": "Expresso, leite vaporizado e espuma de leite", "Preço": "10"},
+    {"name": "Café Filtrado", "style": "Preparado no método tradicional:filtro de papel", "Preço": "20"},    
+    {"name": "Espresso Tradicional ou Macchiato", "style": "Espresso tradicional ou com espuma de leite", "Preço": "12,50"},    
+    {"name": "Avelã", "style": "Espresso com leite e um toque de avelã, finalizado com chantilly e calda de chocolate", "Preço": "16,50"},    
+    {"name": "Brigadeiro", "style": "Espresso com leite, finalizado com chocolate granulado", "Preço": "8,50"},    
+    {"name": "Café Americano", "style": "Espresso suavizado com água quente", "Preço": "14,75"},    
+    {"name": "Café com Leite", "style": "Café preparado em filtro de papel com leite vaporizado", "Preço": "13,80"},    
+    {"name": "Flat white", "style": "Espresso ristretto com leite vaporizado", "Preço": "9,50"},    
+    {"name": "Café Mocha", "style": "Calda de chocolate ou chocolate branco espresso, leite vaporizado e um toque de chantilly", "Preço": "12,75"},    
+    {"name": "Doce de Leite", "style": "Leite vaporizado, calda de doce de leite. Espresso, finalizado com chantilly e calda de caramelo", "Preço": "100"},
+    {"name": "Cappuccino Tradicional", "style": "Espresso com leite cremoso", "Preço": "9,50"},
+    {"name": "Cappuccino Canela", "style": "Espresso, um toque de canela e leite cremoso, finalizado com pitadas de canela em pó", "Preço": "12,50"},
+            
   ];
 
   @override
@@ -101,8 +105,8 @@ class MyTileWidget extends StatelessWidget {
 
           title: Text(obj['name'] ?? ''),
 
-          subtitle: Text('Estilo: ${obj['style'] ?? ''} - IBU: ${obj['ibu'] ?? ''}'),
-          
+          subtitle: Text('Estilo: ${obj['style'] ?? ''} - Preço: ${obj['Preço'] ?? ''}'),
+
         );
       },
     );
