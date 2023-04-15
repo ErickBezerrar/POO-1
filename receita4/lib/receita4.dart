@@ -6,22 +6,19 @@ class MyApp extends StatelessWidget {
 
   @override
 
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => MaterialApp(
 
-    return MaterialApp(
+    title: 'Starbucks Cardápio',
 
-      title: 'Starbucks Cardápio',
+    theme: ThemeData(
 
-      theme: ThemeData(
+      primarySwatch: Colors.green,
 
-        primarySwatch: Colors.green,
+    ),
 
-      ),
+    home: MyHomePage(title: 'Starbucks'),
 
-      home: MyHomePage(title: 'Starbucks'),
-
-    );
-  }
+  );
 }
 
 class MyHomePage extends StatefulWidget {
@@ -87,28 +84,26 @@ class MyTileWidget extends StatelessWidget {
 
   final List<Map<String, String>> dataObjects;
 
-  MyTileWidget({required this.dataObjects});
+  const MyTileWidget({Key? key, required this.dataObjects}) : super(key: key);
 
   @override
 
   Widget build(BuildContext context) {
 
-    return ListView.builder(
+    return ListView(
 
-      itemCount: dataObjects.length,
+      children: [
 
-      itemBuilder: (BuildContext context, int index) {
+        for (final obj in dataObjects)
 
-        final obj = dataObjects[index];
+          ListTile(
 
-        return ListTile(
+            title: Text(obj['name'] ?? ''),
 
-          title: Text(obj['name'] ?? ''),
-
-          subtitle: Text('Estilo: ${obj['style'] ?? ''} - Preço: ${obj['Preço'] ?? ''}'),
-
-        );
-      },
+            subtitle: Text('Estilo: ${obj['style'] ?? ''} - Preço: ${obj['Preço'] ?? ''}'),
+            
+          ),
+      ],
     );
   }
 }
