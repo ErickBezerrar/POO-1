@@ -21,9 +21,7 @@ class MyApp extends StatelessWidget {
   );
 
   List<Map<String, dynamic>> getDataObjects() {
-    // Aqui podemos retornar uma lista de objetos JSON
-    // de qualquer tipo que desejarmos, com as propriedades
-    // que quisermos.
+ 
     return [          
 
       {"name": "Café Latte", "style": "Expresso, leite vaporizado e espuma de leite", "Preço": "10"},
@@ -107,9 +105,6 @@ class DataBodyWidget extends StatelessWidget {
 
             title: Text(obj['name'] ?? ''),
             
-            // Aqui podemos exibir as propriedades que quisermos,
-            // com o texto que quisermos. É possível usar condicionais,
-            // formatação, etc.
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
