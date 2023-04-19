@@ -68,7 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Center(
 
-        child: DataBodyWidget(dataObjects: widget.dataObjects),
+        child: MyTileWidget(dataObjects: widget.dataObjects),
 
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -85,36 +85,28 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class DataBodyWidget extends StatelessWidget {
-
+class MyTileWidget extends StatelessWidget {
   final List<Map<String, dynamic>> dataObjects;
 
-  const DataBodyWidget({Key? key, required this.dataObjects}) : super(key: key);
+  const MyTileWidget({Key? key, required this.dataObjects}) : super(key: key);
 
   @override
-
   Widget build(BuildContext context) {
-
-    return ListView(
-
-      children: [
-
-        for (final obj in dataObjects)
-
-          ListTile(
-
-            title: Text(obj['name'] ?? ''),
-            
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('style: ${obj['style'] ?? ''}'),
-                Text('Preço: ${obj['Preço'] ?? ''}'),
-              ],
-            ),
-            
+    return ListView.builder(
+      itemCount: dataObjects.length,
+      itemBuilder: (BuildContext context, int index) {
+        final obj = dataObjects[index];
+        return ListTile(
+          title: Text(obj['name'] ?? ''),
+          subtitle: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('style: ${obj['style'] ?? ''}'),
+              Text('Preço: ${obj['Preço'] ?? ''}'),
+            ],
           ),
-      ],
+        );
+      },
     );
   }
 }
