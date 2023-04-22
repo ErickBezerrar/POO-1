@@ -91,41 +91,37 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        primarySwatch: Colors.green,
-      ),
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text("Cervejas"),
-        ),
-        body: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: DataBodyWidget(
-            objects: dataObjects,
-            columnNames: ["Nome", "Estilo", "IBU"],
-            propertyNames: ["name", "style", "ibu"],
-          ),
-        ),
-        bottomNavigationBar: NewNavBar(),
-      ),
-    );
-  }
+    @override
+    Widget build(BuildContext context) {
+        return MaterialApp(
+            theme: ThemeData(primarySwatch: Colors.green),
+            debugShowCheckedModeBanner: false,
+            home: Scaffold(
+                appBar: AppBar(
+                    title: const Text("Restaurante do Zé - Cervejas"),
+                ),
+                body: Center(
+                    child: 
+                        SingleChildScrollView(
+                            scrollDirection: Axis.vertical,
+                            child: DataBodyWidget(objects: dataObjects, columnNames: ["Nome", "Estilo", "IBU"], propertyNames: ["name", "style", "ibu"])
+                        )
+                ),                
+                bottomNavigationBar: NewNavBar(),
+            )
+        );
+    }
 }
-
 
 class ModifiedApp extends StatelessWidget {
     @override
     Widget build(BuildContext context) {
         return MaterialApp(
-            theme: ThemeData(primarySwatch: Colors.lightBlue),
+            theme: ThemeData(primarySwatch: Colors.green),
             debugShowCheckedModeBanner: false,
             home: Scaffold(
                 appBar: AppBar(
-                    title: const Text("Dicas"),
+                    title: const Text("Restaurante do Zé - Cervejas do Menu"),
                 ),
                 body: Center(
                     child: MyTileWidget(objects: dataObjects, columnNames: ["Nome", "Estilo", "IBU"], propertyNames: ["name", "style", "ibu"])
@@ -137,29 +133,32 @@ class ModifiedApp extends StatelessWidget {
 }
 
 class NewNavBar extends StatelessWidget {
-    NewNavBar();
+  const NewNavBar();
 
-    void botaoFoiTocado(int index) {
-        print("Tocaram no botão $index");
-    }
+  void _onButtonPressed(int index) {
+    print("Botão $index pressionado");
+  }
 
-    @override
-    Widget build(BuildContext context) {
-        return BottomNavigationBar(onTap: botaoFoiTocado, items: const [
-            BottomNavigationBarItem(
-                label: "Cafés",
-                icon: Icon(Icons.coffee_outlined),
-            ),
-            BottomNavigationBarItem(
-                label: "Cervejas", 
-                icon: Icon(Icons.local_drink_outlined)
-            ),
-            BottomNavigationBarItem(
-                label: "Nações", 
-                icon: Icon(Icons.flag_outlined)
-            )
-        ]);
-    }
+  @override
+  Widget build(BuildContext context) {
+    return BottomNavigationBar(
+      onTap: _onButtonPressed,
+      items: const [
+        BottomNavigationBarItem(
+          label: "Cafés",
+          icon: Icon(Icons.coffee_outlined),
+        ),
+        BottomNavigationBarItem(
+          label: "Cervejas", 
+          icon: Icon(Icons.local_drink_outlined)
+        ),
+        BottomNavigationBarItem(
+          label: "Nações", 
+          icon: Icon(Icons.flag_outlined)
+        ),
+      ],
+    );
+  }
 }
 
 class DataBodyWidget extends StatelessWidget {
@@ -168,61 +167,69 @@ class DataBodyWidget extends StatelessWidget {
   final List<String> propertyNames;
 
   const DataBodyWidget({
-    Key? key,
     this.objects = const [],
     this.columnNames = const [],
     this.propertyNames = const [],
-  }) : super(key: key);
+  });
 
   @override
-  Widget build(BuildContext context) => DataTable(
-        columns: columnNames
-            .map((name) => DataColumn(
-                  label: Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                ))
-            .toList(),
-        rows: objects
-            .map((obj) => DataRow(
-                  cells: propertyNames
-                      .map((propName) => DataCell(Text(obj[propName])))
-                      .toList(),
-                ))
-            .toList(),
-      );
+  Widget build(BuildContext context) {
+    return DataTable(
+      columns: List.generate(
+        columnNames.length,
+        (index) => DataColumn(
+          label: Expanded(
+            child: Text(
+              columnNames[index],
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+        ),
+      ),
+      rows: List.generate(
+        objects.length,
+        (index) => DataRow(
+          cells: List.generate(
+            propertyNames.length,
+            (cellIndex) => DataCell(
+              Text(
+                objects[index][propertyNames[cellIndex]].toString(),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 
 class MyTileWidget extends StatelessWidget {
-  final List<Map<String, dynamic>> objects;
-  final List<String> columnNames;
-  final List<String> propertyNames;
+    List<Map<String, dynamic>> objects;
+    final List<String> columnNames;
+    final List<String> propertyNames;
 
-  const MyTileWidget({
-    Key? key,
-    required this.objects,
-    required this.columnNames,
-    required this.propertyNames,
-  }) : super(key: key);
+    MyTileWidget({this.objects = const [], this.columnNames = const [], this.propertyNames = const []});
 
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: objects.length,
-      itemBuilder: (context, index) {
-        final obj = objects[index];
+    @override
+    Widget build(BuildContext context) {
+        return ListView.builder(
+            itemCount: objects.length,
+            itemBuilder: (context, index) {
+                final obj = objects[index];
 
-        final columnTexts = columnNames.map((col) {
-          final prop = propertyNames[columnNames.indexOf(col)];
-          return Text("$col: ${obj[prop]}");
-        }).toList();
+                final columnTexts = columnNames.map((col) {
+                    final prop = propertyNames[columnNames.indexOf(col)];
+                    return Text("$col: ${obj[prop]}");
+                }).toList();
 
-        return ListTile(
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: columnTexts,
-          ),
+                return ListTile(
+                    title: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: columnTexts,
+                    ),
+                );
+            },
         );
-      },
-    );
-  }
+    }
 }
