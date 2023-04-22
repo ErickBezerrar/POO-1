@@ -1,109 +1,225 @@
 import 'package:flutter/material.dart';
 
-void main() => runApp(MyApp());
+var dataObjects = [
+    {
+        "name": "La Fin Du Monde",
+        "style": "Bock",
+        "ibu": "65"
+    },  
+    {
+        "name": "Sapporo Premiume",
+        "style": "Sour Ale",
+        "ibu": "54"
+    },
+    {
+        "name": "Duvel",
+        "style": "Pilsner",
+        "ibu": "82"
+    },
+    {
+        "name": "Heineken",
+        "style": "Lager",
+        "ibu": "23"
+    },
+    {
+        "name": "Stella Artois",
+        "style": "Belgian Pilsner",
+        "ibu": "25"
+    },
+    {
+        "name": "Guinness",
+        "style": "Stout",
+        "ibu": "45"
+    },
+    {
+        "name": "Corona",
+        "style": "American Lager",
+        "ibu": "19"
+    },
+    {
+        "name": "Budweiser",
+        "style": "American Lager",
+        "ibu": "12"
+    },
+    {
+        "name": "Carlsberg",
+        "style": "Pilsner",
+        "ibu": "30"
+    },
+    {
+        "name": "Asahi",
+        "style": "Lager",
+        "ibu": "18"
+    },
+    {
+        "name": "Coors Banquet",
+        "style": "American Lager",
+        "ibu": "10"
+    },
+    {
+        "name": "Amstel",
+        "style": "Lager",
+        "ibu": "21"
+    },
+    {
+        "name": "Chimay",
+        "style": "Belgian Dubbel",
+        "ibu": "20"
+    },
+    {
+        "name": "Miller",
+        "style": "American Lager",
+        "ibu": "04"
+    },
+    {
+        "name": "Beck's",
+        "style": "German Pilsner",
+        "ibu": "20"
+    },
+    {
+        "name": "Duvel",
+        "style": "Belgian Strong Ale",
+        "ibu": "30"
+    },
+];
+
+void main() {
+//   MyApp app = MyApp();
+  ModifiedApp app = ModifiedApp();
+
+  runApp(app);
+}
 
 class MyApp extends StatelessWidget {
-
   @override
-
-  Widget build(BuildContext context) => MaterialApp(
-
-    title: 'Starbucks Cardápio',
-
-    theme: ThemeData(
-
-      primarySwatch: Colors.green,
-
-    ),
-
-    home: MyHomePage(title: 'Starbucks', dataObjects: getDataObjects()),
-
-  );
-
-  List<Map<String, dynamic>> getDataObjects() {
- 
-    return [          
-
-      {"name": "Café Latte", "style": "Expresso, leite vaporizado e espuma de leite", "Preço": "10"},
-      {"name": "Café Filtrado", "style": "Preparado no método tradicional:filtro de papel", "Preço": "20"},    
-      {"name": "Espresso Tradicional ou Macchiato", "style": "Espresso tradicional ou com espuma de leite", "Preço": "12,50"},    
-      {"name": "Avelã", "style": "Espresso com leite e um toque de avelã, finalizado com chantilly e calda de chocolate", "Preço": "16,50"},    
-      {"name": "Brigadeiro", "style": "Espresso com leite, finalizado com chocolate granulado", "Preço": "8,50"},    
-      {"name": "Café Americano", "style": "Espresso suavizado com água quente", "Preço": "14,75"},    
-      {"name": "Café com Leite", "style": "Café preparado em filtro de papel com leite vaporizado", "Preço": "13,80"},    
-      {"name": "Flat white", "style": "Espresso ristretto com leite vaporizado", "Preço": "9,50"},    
-      {"name": "Café Mocha", "style": "Calda de chocolate ou chocolate branco espresso, leite vaporizado e um toque de chantilly", "Preço": "12,75"},    
-      {"name": "Doce de Leite", "style": "Leite vaporizado, calda de doce de leite. Espresso, finalizado com chantilly e calda de caramelo", "Preço": "100"},
-      {"name": "Cappuccino Tradicional", "style": "Espresso com leite cremoso", "Preço": "9,50"},
-      {"name": "Cappuccino Canela", "style": "Espresso, um toque de canela e leite cremoso, finalizado com pitadas de canela em pó", "Preço": "12,50"},
-    ];
-
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-
-  MyHomePage({Key? key, required this.title, required this.dataObjects}) : super(key: key);
-
-  final String title;
-  final List<Map<String, dynamic>> dataObjects;
-
-  @override
-
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-
-  @override
-
   Widget build(BuildContext context) {
-
-    return Scaffold(
-
-      appBar: AppBar(
-
-        title: Text(widget.title),
-
+    return MaterialApp(
+      theme: ThemeData(
+        primarySwatch: Colors.green,
       ),
-      body: Center(
-
-        child: MyTileWidget(dataObjects: widget.dataObjects),
-
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-
-        items: [
-
-          BottomNavigationBarItem(icon: Icon(Icons.coffee_outlined), label: 'Café'),
-          BottomNavigationBarItem(icon: Icon(Icons.local_drink_outlined), label: 'Bebidas'),
-          BottomNavigationBarItem(icon: Icon(Icons.flag_outlined), label: 'Países'),
-
-        ],
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text("Cervejas"),
+        ),
+        body: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: DataBodyWidget(
+            objects: dataObjects,
+            columnNames: ["Nome", "Estilo", "IBU"],
+            propertyNames: ["name", "style", "ibu"],
+          ),
+        ),
+        bottomNavigationBar: NewNavBar(),
       ),
     );
   }
 }
 
-class MyTileWidget extends StatelessWidget {
-  final List<Map<String, dynamic>> dataObjects;
 
-  const MyTileWidget({Key? key, required this.dataObjects}) : super(key: key);
+class ModifiedApp extends StatelessWidget {
+    @override
+    Widget build(BuildContext context) {
+        return MaterialApp(
+            theme: ThemeData(primarySwatch: Colors.lightBlue),
+            debugShowCheckedModeBanner: false,
+            home: Scaffold(
+                appBar: AppBar(
+                    title: const Text("Dicas"),
+                ),
+                body: Center(
+                    child: MyTileWidget(objects: dataObjects, columnNames: ["Nome", "Estilo", "IBU"], propertyNames: ["name", "style", "ibu"])
+                ),                
+                bottomNavigationBar: NewNavBar(),
+            )
+        );
+    }
+}
+
+class NewNavBar extends StatelessWidget {
+    NewNavBar();
+
+    void botaoFoiTocado(int index) {
+        print("Tocaram no botão $index");
+    }
+
+    @override
+    Widget build(BuildContext context) {
+        return BottomNavigationBar(onTap: botaoFoiTocado, items: const [
+            BottomNavigationBarItem(
+                label: "Cafés",
+                icon: Icon(Icons.coffee_outlined),
+            ),
+            BottomNavigationBarItem(
+                label: "Cervejas", 
+                icon: Icon(Icons.local_drink_outlined)
+            ),
+            BottomNavigationBarItem(
+                label: "Nações", 
+                icon: Icon(Icons.flag_outlined)
+            )
+        ]);
+    }
+}
+
+class DataBodyWidget extends StatelessWidget {
+  final List<Map<String, dynamic>> objects;
+  final List<String> columnNames;
+  final List<String> propertyNames;
+
+  const DataBodyWidget({
+    Key? key,
+    this.objects = const [],
+    this.columnNames = const [],
+    this.propertyNames = const [],
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) => DataTable(
+        columns: columnNames
+            .map((name) => DataColumn(
+                  label: Text(name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                ))
+            .toList(),
+        rows: objects
+            .map((obj) => DataRow(
+                  cells: propertyNames
+                      .map((propName) => DataCell(Text(obj[propName])))
+                      .toList(),
+                ))
+            .toList(),
+      );
+}
+
+
+class MyTileWidget extends StatelessWidget {
+  final List<Map<String, dynamic>> objects;
+  final List<String> columnNames;
+  final List<String> propertyNames;
+
+  const MyTileWidget({
+    Key? key,
+    required this.objects,
+    required this.columnNames,
+    required this.propertyNames,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      itemCount: dataObjects.length,
-      itemBuilder: (BuildContext context, int index) {
-        final obj = dataObjects[index];
+      itemCount: objects.length,
+      itemBuilder: (context, index) {
+        final obj = objects[index];
+
+        final columnTexts = columnNames.map((col) {
+          final prop = propertyNames[columnNames.indexOf(col)];
+          return Text("$col: ${obj[prop]}");
+        }).toList();
+
         return ListTile(
-          title: Text(obj['name'] ?? ''),
-          subtitle: Column(
+          title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('style: ${obj['style'] ?? ''}'),
-              Text('Preço: ${obj['Preço'] ?? ''}'),
-            ],
+            children: columnTexts,
           ),
         );
       },
