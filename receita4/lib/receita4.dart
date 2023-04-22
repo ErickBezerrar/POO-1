@@ -145,12 +145,12 @@ class NewNavBar extends StatelessWidget {
       onTap: _onButtonPressed,
       items: const [
         BottomNavigationBarItem(
-          label: "Cafés",
-          icon: Icon(Icons.coffee_outlined),
-        ),
-        BottomNavigationBarItem(
           label: "Cervejas", 
           icon: Icon(Icons.local_drink_outlined)
+        ),
+        BottomNavigationBarItem(
+          label: "Cafés",
+          icon: Icon(Icons.coffee_outlined),
         ),
         BottomNavigationBarItem(
           label: "Nações", 
