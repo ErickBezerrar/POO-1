@@ -72,7 +72,7 @@ class MyApp extends StatelessWidget {
                   children: <Widget>[
                     Expanded(
                       child: ElevatedButton(
-                        child: Text('Limpar'),
+                        child: Text('Limpar Campos de Texto'),
                         onPressed: () {
                           _controladorNome.clear();
                           _controladorQuantidade.clear();
