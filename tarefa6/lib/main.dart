@@ -23,29 +23,63 @@ class MyApp extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text('Nome em String'),
+                  Text('Nome'),
                   TextField(
                     controller: _controladorNome,
                   ),
                 ],
               ),
               SizedBox(height: 16.0),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              Row(
                 children: <Widget>[
-                  Text('Quantidade em Int'),
-                  TextField(
-                    controller: _controladorQuantidade,
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text('Quantidade(INT)'),
+                        TextField(
+                          controller: _controladorQuantidade,
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(width: 16.0),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text('Valor(FLOAT)'),
+                        TextField(
+                          controller: _controladorValor,
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
               SizedBox(height: 16.0),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              Row(
                 children: <Widget>[
-                  Text('Valor em Float'),
-                  TextField(
-                    controller: _controladorValor,
+                  Expanded(
+                    child: ElevatedButton(
+                      child: Text('Limpar'),
+                      onPressed: () {
+                        _controladorNome.clear();
+                        _controladorQuantidade.clear();
+                        _controladorValor.clear();
+                      },
+                    ),
+                  ),
+                  SizedBox(width: 16.0),
+                  Expanded(
+                    child: ElevatedButton(
+                      child: Text('Dados de exemplo'),
+                      onPressed: () {
+                        _controladorNome.text = 'Produto exemplo';
+                        _controladorQuantidade.text = '10';
+                        _controladorValor.text = '9.99';
+                      },
+                    ),
                   ),
                 ],
               ),
