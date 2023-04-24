@@ -14,6 +14,8 @@ class MyApp extends StatelessWidget {
         body: Column(
           children: <Widget>[
             TextField(),
+            TextField(),
+            TextField(),
           ],
         ),
       ),
