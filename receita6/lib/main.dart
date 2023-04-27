@@ -95,7 +95,7 @@ class MyApp extends StatelessWidget {
 
         body: ValueListenableBuilder(
 
-          valueListenable: tableStateNotifier,
+          valueListenable: dataService.tableStateNotifier,
 
           builder:(_, value, __){
 
@@ -111,9 +111,13 @@ class MyApp extends StatelessWidget {
 
           }
 
-        ),
+        )
 
-        bottomNavigationBar: NewNavBar(itemSelectedCallback: carregar),
+        
+
+        ,
+
+        bottomNavigationBar: NewNavBar(itemSelectedCallback: dataService.carregar),
 
       ));
 
