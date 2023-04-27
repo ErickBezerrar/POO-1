@@ -107,7 +107,7 @@ class MyApp extends StatelessWidget {
 
         ),
 
-        bottomNavigationBar: NewNavBar(itemSelectedCallback: carregarCervejas),
+        bottomNavigationBar: NewNavBar(itemSelectedCallback: carregar),
 
       ));
 
