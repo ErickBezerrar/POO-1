@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
-
-
 class DataService{
 
   final ValueNotifier<List> tableStateNotifier = new ValueNotifier([]);
