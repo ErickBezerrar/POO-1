@@ -5,34 +5,76 @@ var dataObjects = [];
 
 void main() {
   MyApp app = MyApp();
+
   runApp(app);
 }
 
 class MyApp extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     print("no build da classe MyApp");
     return MaterialApp(
-        theme: ThemeData(primarySwatch: Colors.blueGrey),
+        theme: ThemeData(primarySwatch: Colors.deepPurple),
         debugShowCheckedModeBanner: false,
         home: Scaffold(
           appBar: AppBar(
             title: const Text("Dicas"),
           ),
           body: DataTableWidget(jsonObjects: dataObjects),
-          bottomNavigationBar: MyStatefulWidget(),
+          bottomNavigationBar: NewNavBar(),
         ));
   }
 }
 
 class NewNavBar extends HookWidget {
+  NewNavBar();
+
   @override
   Widget build(BuildContext context) {
-    var selectedIndex = useState(0);
+    print("no build da classe NewNavBar");
+    var state = useState(1);
 
     return BottomNavigationBar(
-      currentIndex: selectedIndex.value,
-      onTap: (index) => selectedIndex.value = index,
+        onTap: (index) {
+          state.value = index;
+        },
+        currentIndex: state.value,
+        items: const [
+          BottomNavigationBarItem(
+            label: "Cafés",
+            icon: Icon(Icons.coffee_outlined),
+          ),
+          BottomNavigationBarItem(
+              label: "Cervejas", icon: Icon(Icons.local_drink_outlined)),
+          BottomNavigationBarItem(
+              label: "Nações", icon: Icon(Icons.flag_outlined))
+        ]);
+  }
+}
+
+
+class NewNavBar2 extends StatefulWidget {
+  const NewNavBar2({Key? key}) : super(key: key);
+
+  @override
+  _NewNavBar2State createState() => _NewNavBar2State();
+}
+
+class _NewNavBar2State extends State<NewNavBar2> {
+  int _currentIndex = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    print("no build da classe NewNavBar2");
+
+    return BottomNavigationBar(
+      currentIndex: _currentIndex,
+      onTap: (index) {
+        setState(() {
+          _currentIndex = index;
+        });
+      },
       items: const [
         BottomNavigationBarItem(
           label: "Cafés",
@@ -51,45 +93,9 @@ class NewNavBar extends HookWidget {
   }
 }
 
-class MyStatefulWidget extends StatefulWidget {
-  const MyStatefulWidget({super.key});
-
-  @override
-  State<MyStatefulWidget> createState() => NewNavBar2();
-}
-
-class NewNavBar2 extends State<MyStatefulWidget> {
-  NewNavBar2();
-
-  int _selectIndex = 0;
-
-  void onItemTapped(int index) {
-    setState(() {
-      _selectIndex = index;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return BottomNavigationBar(
-        currentIndex: _selectIndex,
-        onTap: onItemTapped,
-        selectedItemColor: Colors.teal,
-        items: const [
-          BottomNavigationBarItem(
-            label: "Cafés",
-            icon: Icon(Icons.coffee_outlined),
-          ),
-          BottomNavigationBarItem(
-              label: "Cervejas", icon: Icon(Icons.local_drink_outlined)),
-          BottomNavigationBarItem(
-              label: "Nações", icon: Icon(Icons.flag_outlined))
-        ]);
-  }
-}
-
 class DataTableWidget extends StatelessWidget {
   final List jsonObjects;
+
   DataTableWidget({this.jsonObjects = const []});
 
   @override
