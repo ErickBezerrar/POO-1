@@ -3,53 +3,59 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 
 
 
-final ValueNotifier<List> tableStateNotifier = new ValueNotifier([]);
+class DataService{
+
+  final ValueNotifier<List> tableStateNotifier = new ValueNotifier([]);
+
+  
+
+  void carregar(index){
+
+    if (index == 1) carregarCervejas();
+
+  }
 
 
 
-void carregar(index){
+  void carregarCervejas(){
 
-  if (index == 1) carregarCervejas();
+    tableStateNotifier.value = [{
+
+            "name": "La Fin Du Monde",
+
+            "style": "Bock",
+
+            "ibu": "65"
+
+            },
+
+            {
+
+            "name": "Sapporo Premiume",
+
+            "style": "Sour Ale",
+
+            "ibu": "54"
+
+            },
+
+            {
+
+            "name": "Duvel", 
+
+            "style": "Pilsner", 
+
+            "ibu": "82"
+
+            }
+
+          ];
+
+    }
 
 }
 
-
-
-void carregarCervejas(){
-
-  tableStateNotifier.value = [{
-
-          "name": "La Fin Du Monde",
-
-          "style": "Bock",
-
-          "ibu": "65"
-
-          },
-
-          {
-
-          "name": "Sapporo Premiume",
-
-          "style": "Sour Ale",
-
-          "ibu": "54"
-
-          },
-
-          {
-
-          "name": "Duvel", 
-
-          "style": "Pilsner", 
-
-          "ibu": "82"
-
-          }
-
-        ];
-
-}
+final dataService = DataService();
 //var dataObjects = [];
 
 
