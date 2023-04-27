@@ -3,7 +3,53 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 
 
 
-final ValueNotifier<List> twitter = new ValueNotifier([]);
+final ValueNotifier<List> tableStateNotifier = new ValueNotifier([]);
+
+
+
+void carregar(index){
+
+  if (index == 1) carregarCervejas();
+
+}
+
+
+
+void carregarCervejas(){
+
+  tableStateNotifier.value = [{
+
+          "name": "La Fin Du Monde",
+
+          "style": "Bock",
+
+          "ibu": "65"
+
+          },
+
+          {
+
+          "name": "Sapporo Premiume",
+
+          "style": "Sour Ale",
+
+          "ibu": "54"
+
+          },
+
+          {
+
+          "name": "Duvel", 
+
+          "style": "Pilsner", 
+
+          "ibu": "82"
+
+          }
+
+        ];
+
+}
 //var dataObjects = [];
 
 
@@ -41,9 +87,27 @@ class MyApp extends StatelessWidget {
 
           ),
 
-        body: DataTableWidget(jsonObjects:dataObjects),
+        body: ValueListenableBuilder(
 
-        bottomNavigationBar: NewNavBar(),
+          valueListenable: tableStateNotifier,
+
+          builder:(_, value, __){
+
+            return DataTableWidget(
+
+              jsonObjects:value, 
+
+              propertyNames: ["name","style","ibu"], 
+
+              columnNames: ["Nome", "Estilo", "IBU"]
+
+            );
+
+          }
+
+        ),
+
+        bottomNavigationBar: NewNavBar(itemSelectedCallback: carregarCervejas),
 
       ));
 
@@ -59,7 +123,15 @@ class MyApp extends StatelessWidget {
 
 class NewNavBar extends HookWidget {
 
-  NewNavBar();
+  var itemSelectedCallback;
+
+  NewNavBar({this.itemSelectedCallback}){
+
+    itemSelectedCallback ??= (_){} ;
+
+  } 
+
+    
 
 
 
@@ -75,37 +147,7 @@ class NewNavBar extends HookWidget {
 
         state.value = index;
 
-        twitter.value = [{
-
-          "name": "La Fin Du Monde",
-
-          "style": "Bock",
-
-          "ibu": "65"
-
-          },
-
-          {
-
-          "name": "Sapporo Premiume",
-
-          "style": "Sour Ale",
-
-          "ibu": "54"
-
-          },
-
-          {
-
-          "name": "Duvel", 
-
-          "style": "Pilsner", 
-
-          "ibu": "82"
-
-          }
-
-        ];
+        itemSelectedCallback(index);                
 
       }, 
 
@@ -129,7 +171,9 @@ class NewNavBar extends HookWidget {
 
 
 
-        BottomNavigationBarItem(label: "Nações", icon: Icon(Icons.flag_outlined))
+        BottomNavigationBarItem(
+
+          label: "Nações", icon: Icon(Icons.flag_outlined))
 
       ]);
 
@@ -140,7 +184,6 @@ class NewNavBar extends HookWidget {
 
 
 }
-
 
 
 
