@@ -75,7 +75,7 @@ class NewNavBar extends HookWidget {
 
         state.value = index;
 
-        dataObjects = [{
+        twitter.value = [{
 
           "name": "La Fin Du Monde",
 
