@@ -10,31 +10,69 @@ class DataService{
   }
 
   void carregarCervejas(){
-    tableStateNotifier.value = [{
-            "name": "La Fin Du Monde",
-
-            "style": "Bock",
-
-            "ibu": "65"
-            },
-
-            {
-            "name": "Sapporo Premiume",
-
-            "style": "Sour Ale",
-
-            "ibu": "54"
-            },
-
-            {
-            "name": "Duvel", 
-
-            "style": "Pilsner", 
-
-            "ibu": "82"
-            }
-          ];
-    }
+    tableStateNotifier.value = [
+       {
+        "name": "La Fin Du Monde",
+        "style": "Bock",
+        "ibu": "65"
+      },  
+      {
+        "name": "Sapporo Premiume",
+        "style": "Sour Ale",
+        "ibu": "54"
+      },
+      {
+        "name": "Duvel",
+        "style": "Pilsner",
+        "ibu": "82"
+      },
+      {
+        "name": "Heineken",
+        "style": "Lager",
+        "ibu": "23"
+      },
+      {
+        "name": "Stella Artois",
+        "style": "Belgian Pilsner",
+        "ibu": "25"
+      },
+      {
+        "name": "Guinness",
+        "style": "Stout",
+        "ibu": "45"
+      },
+      {
+        "name": "Corona",
+        "style": "American Lager",
+        "ibu": "19"
+      },
+      {
+        "name": "Budweiser",
+        "style": "American Lager",
+        "ibu": "12"
+      },
+      {
+        "name": "Carlsberg",
+        "style": "Pilsner",
+        "ibu": "30"
+      },
+      {
+        "name": "Asahi",
+        "style": "Lager",
+        "ibu": "18"
+      },
+      {
+        "name": "Coors Banquet",
+        "style": "American Lager",
+        "ibu": "10"
+      },
+      {
+        "name": "Amstel",
+        "style": "Lager",
+        "ibu": "21"
+      },
+    ];
+  }
 }
 
 
