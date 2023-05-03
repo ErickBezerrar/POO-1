@@ -1,185 +1,179 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
-class DataService{
+class DataService {
+  final ValueNotifier<List<Map<String, String>>> tableStateNotifier = new ValueNotifier([]);
+  int currentIndex = 0; // Adicione essa linha
 
-  final ValueNotifier<List> tableStateNotifier = new ValueNotifier([]);
-
-  void carregar(index){
-    if (index == 1) carregarCervejas();
+  void carregar(index) {
+    currentIndex = index; // Modifique essa linha
+    if (index == 0) {
+      carregarCafes();
+    } else if (index == 1) {
+      carregarCervejas();
+    } else if (index == 2) {
+      carregarNacoes();
+    }
   }
 
-  void carregarCervejas(){
+  void carregarCervejas() {
     tableStateNotifier.value = [
-       {
-        "name": "La Fin Du Monde",
-        "style": "Bock",
-        "ibu": "65"
-      },  
+      {"name": "La Fin Du Monde", "style": "Bock", "ibu": "65"},    ];
+  }
+
+  void carregarCafes() {
+    tableStateNotifier.value = [
+      {"name": "Café Brasil", "style": "Arábica", "torra": "Média"},    ];
+  }
+
+  void carregarNacoes() {
+    tableStateNotifier.value = [
       {
-        "name": "Sapporo Premiume",
-        "style": "Sour Ale",
-        "ibu": "54"
-      },
-      {
-        "name": "Duvel",
-        "style": "Pilsner",
-        "ibu": "82"
-      },
-      {
-        "name": "Heineken",
-        "style": "Lager",
-        "ibu": "23"
-      },
-      {
-        "name": "Stella Artois",
-        "style": "Belgian Pilsner",
-        "ibu": "25"
-      },
-      {
-        "name": "Guinness",
-        "style": "Stout",
-        "ibu": "45"
-      },
-      {
-        "name": "Corona",
-        "style": "American Lager",
-        "ibu": "19"
-      },
-      {
-        "name": "Budweiser",
-        "style": "American Lager",
-        "ibu": "12"
-      },
-      {
-        "name": "Carlsberg",
-        "style": "Pilsner",
-        "ibu": "30"
-      },
-      {
-        "name": "Asahi",
-        "style": "Lager",
-        "ibu": "18"
-      },
-      {
-        "name": "Coors Banquet",
-        "style": "American Lager",
-        "ibu": "10"
-      },
-      {
-        "name": "Amstel",
-        "style": "Lager",
-        "ibu": "21"
-      },
+        "name": "Brasil", 
+       "capital": "Brasília", 
+       "populacao": "211 milhões"
+      },    
     ];
   }
 }
 
-
-final dataService = DataService();
-//var dataObjects = [];
-
 void main() {
-
-  MyApp app = MyApp();
-
-  runApp(app);
-
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  MyApp({Key? key}) : super(key: key);
+
+  final DataService dataService = DataService();
+  
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(primarySwatch: Colors.deepPurple),
-      debugShowCheckedModeBanner:false,
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
-        appBar: AppBar( 
+        appBar: AppBar(
           title: const Text("Dicas"),
-          ),
-
+        ),
         body: ValueListenableBuilder(
           valueListenable: dataService.tableStateNotifier,
-          builder:(_, value, __){
-            return DataTableWidget(
-              jsonObjects:value, 
-              propertyNames: ["name","style","ibu"], 
-              columnNames: ["Nome", "Estilo", "IBU"]
-            );
-          }
-        )
-        ,
-
-        bottomNavigationBar: NewNavBar(itemSelectedCallback: dataService.carregar),
-      ));
+          builder: (_, value, __) {
+            switch (dataService.currentIndex) {
+              case 0:
+                return DataTableWidget(
+                  jsonObjects: dataService.tableStateNotifier.value,
+                  propertyNames: ["name", "style", "torra"],
+                  columnNames: ["Nome", "Estilo", "Torra"],
+                );
+              case 1:
+                return DataTableWidget(
+                  jsonObjects: dataService.tableStateNotifier.value,
+                  propertyNames: ["name", "style", "ibu"],
+                  columnNames: ["Nome", "Estilo", "IBU"],
+                );
+              case 2:
+                return DataTableWidget(
+                  jsonObjects: dataService.tableStateNotifier.value,
+                  propertyNames: ["name", "capital", "populacao"],
+                  columnNames: ["País", "Capital", "População"],
+                );
+              default:
+                return Container();
+            }
+          },
+        ),
+        bottomNavigationBar: NewNavBar(
+          itemSelectedCallback: dataService.carregar,
+          currentIndex: dataService.currentIndex,
+        ),
+      ),
+    );
   }
 }
 
 
-
-
-
 class NewNavBar extends HookWidget {
-  var itemSelectedCallback;
-  NewNavBar({this.itemSelectedCallback}){
-    itemSelectedCallback ??= (_){} ;
-  } 
+  final Function(int) itemSelectedCallback;
+  final int currentIndex; // Adicione essa linha
+
+  NewNavBar({required this.itemSelectedCallback, required this.currentIndex}); // Modifique essa linha
 
   @override
   Widget build(BuildContext context) {
-    var state = useState(1);
+    final state = useState<int>(1);
     return BottomNavigationBar(
-      onTap: (index){
+      onTap: (index) {
         state.value = index;
-        itemSelectedCallback(index);                
-      }, 
-
-      currentIndex: state.value,
+        itemSelectedCallback(index);
+      },
+      currentIndex: currentIndex, // Modifique essa linha
       items: const [
         BottomNavigationBarItem(
           label: "Cafés",
           icon: Icon(Icons.coffee_outlined),
         ),
-
         BottomNavigationBarItem(
-            label: "Cervejas", icon: Icon(Icons.local_drink_outlined)),
-
+          label: "Cervejas",
+          icon: Icon(Icons.local_drink_outlined),
+        ),
         BottomNavigationBarItem(
-          label: "Nações", icon: Icon(Icons.flag_outlined))
-      ]);
+          label: "Nações",
+          icon: Icon(Icons.flag_outlined),
+        ),
+      ],
+    );
   }
 }
 
-
-
-
-
 class DataTableWidget extends StatelessWidget {
-
   final List jsonObjects;
   final List<String> columnNames;
   final List<String> propertyNames;
 
-  DataTableWidget( {this.jsonObjects = const [], this.columnNames = const ["Nome","Estilo","IBU"], this.propertyNames= const ["name", "style", "ibu"]});
+  DataTableWidget({
+    this.jsonObjects = const [],
+    this.columnNames = const ["Nome", "Estilo", "IBU"],
+    this.propertyNames = const ["name", "style", "ibu"],
+  });
+
+  DataTableWidget.cafes({
+    required this.jsonObjects,
+    this.columnNames = const ["Nome", "Estilo", "Torra"],
+    this.propertyNames = const ["name", "style", "torra"],
+  });
+
+  DataTableWidget.nacoes({
+    required this.jsonObjects,
+    this.columnNames = const ["Nome", "Capital", "População"],
+    this.propertyNames = const ["name", "capital", "populacao"],
+  });
 
   @override
   Widget build(BuildContext context) {
     return DataTable(
-      columns: columnNames.map( 
-                (name) => DataColumn(
-                  label: Expanded(
-                    child: Text(name, style: TextStyle(fontStyle: FontStyle.italic))
-                  )
-                )
-              ).toList()       
-      ,
-      rows: jsonObjects.map( 
-        (obj) => DataRow(
-            cells: propertyNames.map(
-              (propName) => DataCell(Text(obj[propName]))
-            ).toList()
+      columns: columnNames
+          .map(
+            (name) => DataColumn(
+              label: Expanded(
+                child: Text(name, style: TextStyle(fontStyle: FontStyle.italic)),
+              ),
+            ),
           )
-        ).toList());
+          .toList(),
+      rows: jsonObjects
+          .map(
+            (obj) => DataRow(
+              cells: propertyNames
+                  .map(
+                    (propName) => DataCell(
+                      Text(obj[propName]),
+                    ),
+                  )
+                  .toList(),
+            ),
+          )
+          .toList(),
+    );
   }
 }
