@@ -3,10 +3,10 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 
 class DataService {
   final ValueNotifier<List<Map<String, String>>> tableStateNotifier = new ValueNotifier([]);
-  int currentIndex = 0; // Adicione essa linha
+  int currentIndex = 0;
 
   void carregar(index) {
-    currentIndex = index; // Modifique essa linha
+    currentIndex = index;
     if (index == 0) {
       carregarCafes();
     } else if (index == 1) {
@@ -29,7 +29,7 @@ class DataService {
   void carregarNacoes() {
     tableStateNotifier.value = [
       {
-        "name": "Brasil", 
+       "name": "Brasil", 
        "capital": "Brasília", 
        "populacao": "211 milhões"
       },    
@@ -95,9 +95,9 @@ class MyApp extends StatelessWidget {
 
 class NewNavBar extends HookWidget {
   final Function(int) itemSelectedCallback;
-  final int currentIndex; // Adicione essa linha
+  final int currentIndex; 
 
-  NewNavBar({required this.itemSelectedCallback, required this.currentIndex}); // Modifique essa linha
+  NewNavBar({required this.itemSelectedCallback, required this.currentIndex}); 
 
   @override
   Widget build(BuildContext context) {
@@ -107,7 +107,7 @@ class NewNavBar extends HookWidget {
         state.value = index;
         itemSelectedCallback(index);
       },
-      currentIndex: currentIndex, // Modifique essa linha
+      currentIndex: currentIndex, 
       items: const [
         BottomNavigationBarItem(
           label: "Cafés",
