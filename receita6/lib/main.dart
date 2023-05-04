@@ -108,7 +108,7 @@ class _MyAppState extends State<MyApp> {
 
     return MaterialApp(
       theme: ThemeData(
-        primarySwatch: Colors.deepPurple,
+        primarySwatch: Colors.yellow,
       ),
       debugShowCheckedModeBanner: false,
       home: Scaffold(
