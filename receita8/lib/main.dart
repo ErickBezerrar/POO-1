@@ -50,11 +50,13 @@ void main() {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends HookWidget {
   final dataService = DataService();
 
   @override
   Widget build(BuildContext context) {
+    final state = useState(1);
+
     return MaterialApp(
       theme: ThemeData(primarySwatch: Colors.deepPurple),
       debugShowCheckedModeBanner: false,
@@ -82,40 +84,28 @@ class MyApp extends StatelessWidget {
             return Text("...");
           },
         ),
-        bottomNavigationBar: NewNavBar(itemSelectedCallback: dataService.carregar),
+        bottomNavigationBar: BottomNavigationBar(
+          onTap: (index) {
+            state.value = index;
+            dataService.carregar(index);
+          },
+          currentIndex: state.value,
+          items: const [
+            BottomNavigationBarItem(
+              label: "Cafés",
+              icon: Icon(Icons.coffee_outlined),
+            ),
+            BottomNavigationBarItem(
+              label: "Cervejas",
+              icon: Icon(Icons.local_drink_outlined),
+            ),
+            BottomNavigationBarItem(
+              label: "Nações",
+              icon: Icon(Icons.flag_outlined),
+            ),
+          ],
+        ),
       ),
-    );
-  }
-}
-
-class NewNavBar extends StatelessWidget {
-  final Function(int) itemSelectedCallback;
-
-  NewNavBar({required this.itemSelectedCallback});
-
-  @override
-  Widget build(BuildContext context) {
-    final state = useState(1);
-    return BottomNavigationBar(
-      onTap: (index) {
-        state.value = index;
-        itemSelectedCallback(index);
-      },
-      currentIndex: state.value,
-      items: const [
-        BottomNavigationBarItem(
-          label: "Cafés",
-          icon: Icon(Icons.coffee_outlined),
-        ),
-        BottomNavigationBarItem(
-          label: "Cervejas",
-          icon: Icon(Icons.local_drink_outlined),
-        ),
-        BottomNavigationBarItem(
-          label: "Nações",
-          icon: Icon(Icons.flag_outlined),
-        ),
-      ],
     );
   }
 }
