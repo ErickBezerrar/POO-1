@@ -7,24 +7,56 @@ enum TableStatus { idle, loading, ready, error }
 
 class DataService {
   final ValueNotifier<Map<String, dynamic>> tableStateNotifier =
-      ValueNotifier({'status': TableStatus.idle, 'dataObjects': []});
+      ValueNotifier({
+    'status': TableStatus.idle,
+    'dataObjects': [],
+  });
 
-  void carregar(int index) {
+  void carregar(index) {
     final funcoes = [carregarCafes, carregarCervejas, carregarNacoes];
-
-    tableStateNotifier.value = {'status': TableStatus.loading, 'dataObjects': []};
-
+    tableStateNotifier.value = {
+      'status': TableStatus.loading,
+      'dataObjects': [],
+    };
     funcoes[index]();
   }
 
   void carregarCafes() {
-    // Lógica para carregar cafés
-    return;
+    var cafesUri = Uri(
+      scheme: 'https',
+      host: 'random-data-api.com',
+      path: 'api/coffee/random_coffee',
+      queryParameters: {'size': '5'},
+    );
+
+    http.read(cafesUri).then((jsonString) {
+      var cafesJson = jsonDecode(jsonString);
+
+      tableStateNotifier.value = {
+        'status': TableStatus.ready,
+        'dataObjects': cafesJson,
+        'propertyNames': ["name", "roast", "origin"],
+      };
+    });
   }
 
   void carregarNacoes() {
-    // Lógica para carregar nações
-    return;
+    var nacoesUri = Uri(
+      scheme: 'https',
+      host: 'random-data-api.com',
+      path: 'api/nations/random_nation',
+      queryParameters: {'size': '5'},
+    );
+
+    http.read(nacoesUri).then((jsonString) {
+      var nacoesJson = jsonDecode(jsonString);
+
+      tableStateNotifier.value = {
+        'status': TableStatus.ready,
+        'dataObjects': nacoesJson,
+        'propertyNames': ["name", "capital", "population"],
+      };
+    });
   }
 
   void carregarCervejas() {
@@ -37,6 +69,7 @@ class DataService {
 
     http.read(beersUri).then((jsonString) {
       var beersJson = jsonDecode(jsonString);
+
       tableStateNotifier.value = {
         'status': TableStatus.ready,
         'dataObjects': beersJson,
@@ -46,17 +79,15 @@ class DataService {
   }
 }
 
+final dataService = DataService();
+
 void main() {
   runApp(MyApp());
 }
 
-class MyApp extends HookWidget {
-  final dataService = DataService();
-
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final state = useState(1);
-
     return MaterialApp(
       theme: ThemeData(primarySwatch: Colors.deepPurple),
       debugShowCheckedModeBanner: false,
@@ -69,7 +100,7 @@ class MyApp extends HookWidget {
           builder: (_, value, __) {
             switch (value['status']) {
               case TableStatus.idle:
-                return Text("Toque em algum botão");
+                return Text("Toque algum botão");
               case TableStatus.loading:
                 return CircularProgressIndicator();
               case TableStatus.ready:
@@ -79,33 +110,45 @@ class MyApp extends HookWidget {
                   columnNames: ["Nome", "Estilo", "IBU"],
                 );
               case TableStatus.error:
-                return Text("Ocorreu um erro");
+                return Text("Lascou");
             }
             return Text("...");
           },
         ),
-        bottomNavigationBar: BottomNavigationBar(
-          onTap: (index) {
-            state.value = index;
-            dataService.carregar(index);
-          },
-          currentIndex: state.value,
-          items: const [
-            BottomNavigationBarItem(
-              label: "Cafés",
-              icon: Icon(Icons.coffee_outlined),
-            ),
-            BottomNavigationBarItem(
-              label: "Cervejas",
-              icon: Icon(Icons.local_drink_outlined),
-            ),
-            BottomNavigationBarItem(
-              label: "Nações",
-              icon: Icon(Icons.flag_outlined),
-            ),
-          ],
-        ),
+        bottomNavigationBar: NewNavBar(itemSelectedCallback: dataService.carregar),
       ),
+    );
+  }
+}
+
+class NewNavBar extends HookWidget {
+  final Function(int) itemSelectedCallback;
+
+  NewNavBar({required this.itemSelectedCallback});
+
+  @override
+  Widget build(BuildContext context) {
+    var state = useState(1);
+    return BottomNavigationBar(
+      onTap: (index) {
+        state.value = index;
+        itemSelectedCallback(index);
+      },
+      currentIndex: state.value,
+      items: const [
+        BottomNavigationBarItem(
+          label: "Cafés",
+          icon: Icon(Icons.coffee_outlined),
+        ),
+        BottomNavigationBarItem(
+          label: "Cervejas",
+          icon: Icon(Icons.local_drink_outlined),
+        ),
+        BottomNavigationBarItem(
+          label: "Nações",
+          icon: Icon(Icons.flag_outlined),
+        ),
+      ],
     );
   }
 }
@@ -115,11 +158,7 @@ class DataTableWidget extends StatelessWidget {
   final List<String> columnNames;
   final List<String> propertyNames;
 
-  DataTableWidget({
-    this.jsonObjects = const [],
-    this.columnNames = const ["Nome", "Estilo", "IBU"],
-    this.propertyNames = const ["name", "style", "ibu"],
-  });
+  DataTableWidget({this.jsonObjects = const [], this.columnNames = const ["Nome", "Estilo", "IBU"], this.propertyNames = const ["name", "style", "ibu"]});
 
   @override
   Widget build(BuildContext context) {
@@ -127,22 +166,23 @@ class DataTableWidget extends StatelessWidget {
       columns: columnNames
           .map(
             (name) => DataColumn(
-              label: Text(
-                name,
-                style: TextStyle(fontStyle: FontStyle.italic),
+              label: Expanded(
+                child: Text(name, style: TextStyle(fontStyle: FontStyle.italic)),
               ),
             ),
           )
           .toList(),
-      rows: jsonObjects.map(
-        (obj) => DataRow(
-          cells: propertyNames
-              .map(
-                (propName) => DataCell(Text(obj[propName])),
-              )
-              .toList(),
-        ),
-      ).toList(),
+      rows: jsonObjects
+          .map(
+            (obj) => DataRow(
+              cells: propertyNames
+                  .map(
+                    (propName) => DataCell(Text(obj[propName])),
+                  )
+                  .toList(),
+            ),
+          )
+          .toList(),
     );
   }
 }
