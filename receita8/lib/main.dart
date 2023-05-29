@@ -3,7 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-enum TableStatus { idle, loading, ready, error }
+enum TableStatus { idle, loading, ready, error, noConnection }
 
 class DataService {
   final ValueNotifier<Map<String, dynamic>> tableStateNotifier =
@@ -50,7 +50,7 @@ class DataService {
       }
     }).catchError((error) {
       tableStateNotifier.value = {
-        'status': TableStatus.error,
+        'status': TableStatus.noConnection, // Alterado para noConnection
         'dataObjects': [],
         'columnNames': [],
       };
@@ -83,7 +83,7 @@ class DataService {
       }
     } catch (error) {
       tableStateNotifier.value = {
-        'status': TableStatus.error,
+        'status': TableStatus.noConnection, // Alterado para noConnection
         'dataObjects': [],
         'columnNames': [],
       };
@@ -115,7 +115,7 @@ class DataService {
       }
     }).catchError((error) {
       tableStateNotifier.value = {
-        'status': TableStatus.error,
+        'status': TableStatus.noConnection, // Alterado para noConnection
         'dataObjects': [],
         'columnNames': [],
       };
@@ -182,6 +182,8 @@ class MyApp extends StatelessWidget {
                 );
               case TableStatus.error:
                 return Text("Ocorreu um erro");
+              case TableStatus.noConnection: // Adicionado caso noConnection
+                return Text("Sem conexão de rede");
               default:
                 return Text("...");
             }
