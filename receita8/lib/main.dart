@@ -13,7 +13,7 @@ class DataService {
     'columnNames': ["Nome", "Estilo", "IBU"],
   });
 
-  void carregar(index) {
+  void carregar(int index) {
     final funcoes = [carregarCafes, carregarCervejas, carregarNacoes];
 
     tableStateNotifier.value = {
@@ -35,7 +35,7 @@ class DataService {
 
     http.get(cafesUri).then((response) {
       if (response.statusCode == 200) {
-        var cafesJson = jsonDecode(response.body);
+        var cafesJson = jsonDecode(response.body) as List<dynamic>;
         tableStateNotifier.value = {
           'status': TableStatus.ready,
           'dataObjects': cafesJson,
@@ -50,7 +50,7 @@ class DataService {
       }
     }).catchError((error) {
       tableStateNotifier.value = {
-        'status': TableStatus.noConnection, // Alterado para noConnection
+        'status': TableStatus.noConnection,
         'dataObjects': [],
         'columnNames': [],
       };
@@ -68,7 +68,7 @@ class DataService {
     try {
       var response = await http.get(nationsUri);
       if (response.statusCode == 200) {
-        var nationsJson = jsonDecode(response.body);
+        var nationsJson = jsonDecode(response.body) as List<dynamic>;
         tableStateNotifier.value = {
           'status': TableStatus.ready,
           'dataObjects': nationsJson,
@@ -83,7 +83,7 @@ class DataService {
       }
     } catch (error) {
       tableStateNotifier.value = {
-        'status': TableStatus.noConnection, // Alterado para noConnection
+        'status': TableStatus.noConnection,
         'dataObjects': [],
         'columnNames': [],
       };
@@ -100,7 +100,7 @@ class DataService {
 
     http.get(beersUri).then((response) {
       if (response.statusCode == 200) {
-        var beersJson = jsonDecode(response.body);
+        var beersJson = jsonDecode(response.body) as List<dynamic>;
         tableStateNotifier.value = {
           'status': TableStatus.ready,
           'dataObjects': beersJson,
@@ -115,7 +115,7 @@ class DataService {
       }
     }).catchError((error) {
       tableStateNotifier.value = {
-        'status': TableStatus.noConnection, // Alterado para noConnection
+        'status': TableStatus.noConnection,
         'dataObjects': [],
         'columnNames': [],
       };
@@ -177,12 +177,11 @@ class MyApp extends StatelessWidget {
               case TableStatus.ready:
                 return DataTableWidget(
                   jsonObjects: value['dataObjects'],
-                  propertyNames: ["name", "style", "ibu"],
                   columnNames: value['columnNames'],
                 );
               case TableStatus.error:
                 return Text("Ocorreu um erro");
-              case TableStatus.noConnection: // Adicionado caso noConnection
+              case TableStatus.noConnection:
                 return Text("Sem conexão de rede");
               default:
                 return Text("...");
@@ -229,34 +228,38 @@ class NewNavBar extends HookWidget {
 }
 
 class DataTableWidget extends StatelessWidget {
-  final List jsonObjects;
+  final List<dynamic> jsonObjects;
   final List<String> columnNames;
-  final List<String> propertyNames;
 
-  DataTableWidget({
-    this.jsonObjects = const [],
-    this.columnNames = const ["Nome", "Estilo", "IBU"],
-    this.propertyNames = const ["name", "style", "ibu"],
-  });
+  const DataTableWidget({
+    Key? key,
+    required this.jsonObjects,
+    required this.columnNames,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return DataTable(
-      columns: List<DataColumn>.generate(
-        columnNames.length,
-        (index) => DataColumn(label: Text(columnNames[index])),
-      ),
-      rows: List<DataRow>.generate(
-        jsonObjects.length,
-        (index) => DataRow(
-          cells: List<DataCell>.generate(
-            propertyNames.length,
-            (cellIndex) => DataCell(
-              Text(jsonObjects[index][propertyNames[cellIndex]].toString()),
-            ),
+    return ListView(
+      padding: const EdgeInsets.all(16.0),
+      children: [
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: DataTable(
+            columns: columnNames
+                .map((columnName) => DataColumn(label: Text(columnName)))
+                .toList(),
+            rows: jsonObjects
+                .map((jsonObject) => DataRow(
+                      cells: jsonObject.entries
+                          .map((entry) => DataCell(
+                                Text(entry.value.toString()),
+                              ))
+                          .toList(),
+                    ))
+                .toList(),
           ),
         ),
-      ),
+      ],
     );
   }
 }
