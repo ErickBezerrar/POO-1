@@ -200,7 +200,7 @@ class NewNavBar extends StatelessWidget {
   }
 }
 
-class DataTableWidget extends StatelessWidget {
+class DataTableWidget extends StatefulWidget {
   final List<dynamic> jsonObjects;
   final List<String> propertyNames;
   final List<String> columnNames;
@@ -212,6 +212,26 @@ class DataTableWidget extends StatelessWidget {
   });
 
   @override
+  _DataTableWidgetState createState() => _DataTableWidgetState();
+}
+
+class _DataTableWidgetState extends State<DataTableWidget> {
+  bool isNameColumnSortedAscending = true;
+
+  void sortDataObjects(int columnIndex, bool ascending) {
+    setState(() {
+      if (columnIndex == 0) {
+        // Sort by "Nome" column
+        if (ascending) {
+          widget.jsonObjects.sort((a, b) => a[widget.propertyNames[columnIndex]].compareTo(b[widget.propertyNames[columnIndex]]));
+        } else {
+          widget.jsonObjects.sort((a, b) => b[widget.propertyNames[columnIndex]].compareTo(a[widget.propertyNames[columnIndex]]));
+        }
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return ListView(
       children: [
@@ -219,21 +239,25 @@ class DataTableWidget extends StatelessWidget {
           scrollDirection: Axis.horizontal,
           child: DataTable(
             columns: List<DataColumn>.generate(
-              columnNames.length,
+              widget.columnNames.length,
               (index) => DataColumn(
                 label: Text(
-                  columnNames[index],
+                  widget.columnNames[index],
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
+                onSort: (columnIndex, ascending) {
+                  sortDataObjects(columnIndex, ascending);
+                  isNameColumnSortedAscending = ascending;
+                },
               ),
             ),
             rows: List<DataRow>.generate(
-              jsonObjects.length,
+              widget.jsonObjects.length,
               (index) => DataRow(
                 cells: List<DataCell>.generate(
-                  propertyNames.length,
+                  widget.propertyNames.length,
                   (cellIndex) => DataCell(
-                    Text(jsonObjects[index][propertyNames[cellIndex]].toString()),
+                    Text(widget.jsonObjects[index][widget.propertyNames[cellIndex]].toString()),
                   ),
                 ),
               ),
