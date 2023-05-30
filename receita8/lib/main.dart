@@ -216,17 +216,19 @@ class DataTableWidget extends StatefulWidget {
 }
 
 class _DataTableWidgetState extends State<DataTableWidget> {
-  bool isNameColumnSortedAscending = true;
+  int? _sortColumnIndex;
+  bool _isColumnSortedAscending = true;
 
-  void sortDataObjects(int columnIndex, bool ascending) {
+  void sortDataObjects(int columnIndex) {
     setState(() {
       if (columnIndex == 0) {
         // Sort by "Nome" column
-        if (ascending) {
+        if (_isColumnSortedAscending) {
           widget.jsonObjects.sort((a, b) => a[widget.propertyNames[columnIndex]].compareTo(b[widget.propertyNames[columnIndex]]));
         } else {
           widget.jsonObjects.sort((a, b) => b[widget.propertyNames[columnIndex]].compareTo(a[widget.propertyNames[columnIndex]]));
         }
+        _isColumnSortedAscending = !_isColumnSortedAscending;
       }
     });
   }
@@ -246,9 +248,9 @@ class _DataTableWidgetState extends State<DataTableWidget> {
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 onSort: (columnIndex, ascending) {
-                  sortDataObjects(columnIndex, ascending);
-                  isNameColumnSortedAscending = ascending;
+                  sortDataObjects(columnIndex);
                 },
+                tooltip: 'Sort',
               ),
             ),
             rows: List<DataRow>.generate(
