@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-enum TableStatus { idle, loading, ready, error, noConnection }
+enum TableStatus { idle, loading, ready, error }
 
 class DataService {
-  final ValueNotifier<Map<String, dynamic>> tableStateNotifier =
-      ValueNotifier({
+  final ValueNotifier<Map<String, dynamic>> tableStateNotifier = ValueNotifier({
     'status': TableStatus.idle,
     'dataObjects': [],
-    'columnNames': ["Nome", "Estilo", "IBU"],
   });
 
   void carregar(int index) {
@@ -19,71 +16,58 @@ class DataService {
     tableStateNotifier.value = {
       'status': TableStatus.loading,
       'dataObjects': [],
-      'columnNames': [],
     };
 
     funcoes[index]();
   }
 
   void carregarCafes() {
-    var cafesUri = Uri(
+    var coffeesUri = Uri(
       scheme: 'https',
       host: 'random-data-api.com',
       path: 'api/coffee/random_coffee',
       queryParameters: {'size': '5'},
     );
 
-    http.get(cafesUri).then((response) {
-      if (response.statusCode == 200) {
-        var cafesJson = jsonDecode(response.body) as List<dynamic>;
-        tableStateNotifier.value = {
-          'status': TableStatus.ready,
-          'dataObjects': cafesJson,
-          'columnNames': ["Nome", "Origem", "Intensidade"],
-        };
-      } else {
-        tableStateNotifier.value = {
-          'status': TableStatus.error,
-          'dataObjects': [],
-          'columnNames': [],
-        };
-      }
+    http.read(coffeesUri).then((jsonString) {
+      var coffeesJson = jsonDecode(jsonString);
+
+      tableStateNotifier.value = {
+        'status': TableStatus.ready,
+        'dataObjects': coffeesJson,
+        'columnNames': ['Nome', 'Origem', 'Variedade', 'Notas', 'Intensidade'],
+        'propertyNames': ['blend_name', 'origin', 'variety', 'notes', 'intensifier'],
+      };
     }).catchError((error) {
       tableStateNotifier.value = {
-        'status': TableStatus.noConnection,
+        'status': TableStatus.error,
         'dataObjects': [],
         'columnNames': [],
       };
     });
   }
 
-  Future<void> carregarNacoes() async {
-    var nationsUri = Uri(
-      scheme: 'https',
-      host: 'random-data-api.com',
-      path: 'api/nation/random_nation',
-      queryParameters: {'size': '5'},
-    );
-
+  void carregarNacoes() async {
     try {
-      var response = await http.get(nationsUri);
-      if (response.statusCode == 200) {
-        var nationsJson = jsonDecode(response.body) as List<dynamic>;
-        tableStateNotifier.value = {
-          'status': TableStatus.ready,
-          'dataObjects': nationsJson,
-          'columnNames': ["Nome", "Capital", "População"],
-        };
-      } else {
-        tableStateNotifier.value = {
-          'status': TableStatus.error,
-          'dataObjects': [],
-          'columnNames': [],
-        };
-      }
+      var nationsUri = Uri(
+        scheme: 'https',
+        host: 'random-data-api.com',
+        path: 'api/nation/random_nation',
+        queryParameters: {'size': '5'},
+      );
+
+      var jsonString = await http.read(nationsUri);
+      var nationsJson = jsonDecode(jsonString);
+
+      tableStateNotifier.value = {
+        'status': TableStatus.ready,
+        'dataObjects': nationsJson,
+        'columnNames': ['Nacionalidade', 'Idioma', 'Capital', 'Esporte Nac.'],
+        'propertyNames': ['nationality', 'language', 'capital', 'national_sport']
+      };
     } catch (error) {
       tableStateNotifier.value = {
-        'status': TableStatus.noConnection,
+        'status': TableStatus.error,
         'dataObjects': [],
         'columnNames': [],
       };
@@ -98,24 +82,18 @@ class DataService {
       queryParameters: {'size': '5'},
     );
 
-    http.get(beersUri).then((response) {
-      if (response.statusCode == 200) {
-        var beersJson = jsonDecode(response.body) as List<dynamic>;
-        tableStateNotifier.value = {
-          'status': TableStatus.ready,
-          'dataObjects': beersJson,
-          'columnNames': ["Nome", "Estilo", "IBU"],
-        };
-      } else {
-        tableStateNotifier.value = {
-          'status': TableStatus.error,
-          'dataObjects': [],
-          'columnNames': [],
-        };
-      }
+    http.read(beersUri).then((jsonString) {
+      var beersJson = jsonDecode(jsonString);
+
+      tableStateNotifier.value = {
+        'status': TableStatus.ready,
+        'dataObjects': beersJson,
+        'columnNames': ['Nome', 'Estilo', 'IBU'],
+        'propertyNames': ['name', 'style', 'ibu'],
+      };
     }).catchError((error) {
       tableStateNotifier.value = {
-        'status': TableStatus.noConnection,
+        'status': TableStatus.error,
         'dataObjects': [],
         'columnNames': [],
       };
@@ -177,12 +155,11 @@ class MyApp extends StatelessWidget {
               case TableStatus.ready:
                 return DataTableWidget(
                   jsonObjects: value['dataObjects'],
+                  propertyNames: value['propertyNames'],
                   columnNames: value['columnNames'],
                 );
               case TableStatus.error:
                 return Text("Ocorreu um erro");
-              case TableStatus.noConnection:
-                return Text("Sem conexão de rede");
               default:
                 return Text("...");
             }
@@ -194,33 +171,29 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class NewNavBar extends HookWidget {
+class NewNavBar extends StatelessWidget {
   final Function(int) itemSelectedCallback;
 
   NewNavBar({required this.itemSelectedCallback});
 
   @override
   Widget build(BuildContext context) {
-    var state = useState(1);
-
     return BottomNavigationBar(
       onTap: (index) {
-        state.value = index;
         itemSelectedCallback(index);
       },
-      currentIndex: state.value,
       items: const [
         BottomNavigationBarItem(
           label: "Cafés",
-          icon: Icon(Icons.coffee_outlined),
+          icon: Icon(Icons.local_cafe),
         ),
         BottomNavigationBarItem(
           label: "Cervejas",
-          icon: Icon(Icons.local_drink_outlined),
+          icon: Icon(Icons.local_drink),
         ),
         BottomNavigationBarItem(
           label: "Nações",
-          icon: Icon(Icons.flag_outlined),
+          icon: Icon(Icons.public),
         ),
       ],
     );
@@ -229,34 +202,42 @@ class NewNavBar extends HookWidget {
 
 class DataTableWidget extends StatelessWidget {
   final List<dynamic> jsonObjects;
+  final List<String> propertyNames;
   final List<String> columnNames;
 
-  const DataTableWidget({
-    Key? key,
+  DataTableWidget({
     required this.jsonObjects,
+    required this.propertyNames,
     required this.columnNames,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: const EdgeInsets.all(16.0),
       children: [
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: DataTable(
-            columns: columnNames
-                .map((columnName) => DataColumn(label: Text(columnName)))
-                .toList(),
-            rows: jsonObjects
-                .map((jsonObject) => DataRow(
-                      cells: jsonObject.entries
-                          .map((entry) => DataCell(
-                                Text(entry.value.toString()),
-                              ))
-                          .toList(),
-                    ))
-                .toList(),
+            columns: List<DataColumn>.generate(
+              columnNames.length,
+              (index) => DataColumn(
+                label: Text(
+                  columnNames[index],
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+            rows: List<DataRow>.generate(
+              jsonObjects.length,
+              (index) => DataRow(
+                cells: List<DataCell>.generate(
+                  propertyNames.length,
+                  (cellIndex) => DataCell(
+                    Text(jsonObjects[index][propertyNames[cellIndex]].toString()),
+                  ),
+                ),
+              ),
+            ),
           ),
         ),
       ],
