@@ -36,7 +36,13 @@ class DataService {
         'status': TableStatus.ready,
         'dataObjects': coffeesJson,
         'columnNames': ['Nome', 'Origem', 'Variedade', 'Notas', 'Intensidade'],
-        'propertyNames': ['blend_name', 'origin', 'variety', 'notes', 'intensifier'],
+        'propertyNames': [
+          'blend_name',
+          'origin',
+          'variety',
+          'notes',
+          'intensifier'
+        ],
       };
     }).catchError((error) {
       tableStateNotifier.value = {
@@ -63,7 +69,12 @@ class DataService {
         'status': TableStatus.ready,
         'dataObjects': nationsJson,
         'columnNames': ['Nacionalidade', 'Idioma', 'Capital', 'Esporte Nac.'],
-        'propertyNames': ['nationality', 'language', 'capital', 'national_sport']
+        'propertyNames': [
+          'nationality',
+          'language',
+          'capital',
+          'national_sport'
+        ]
       };
     } catch (error) {
       tableStateNotifier.value = {
@@ -115,7 +126,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
-          title: const Text("Dicas"),
+          title: const Text("Tabelas"),
         ),
         body: ValueListenableBuilder(
           valueListenable: dataService.tableStateNotifier,
@@ -139,9 +150,19 @@ class MyApp extends StatelessWidget {
                         children: [
                           const SizedBox(height: 200),
                           Text(
-                            "Bem-vindo ao meu aplicativo!\nToque em um botão para começar.",
+                            "Bem-vindo ao meu aplicativo!!",
                             textAlign: TextAlign.center,
-                            style: TextStyle(fontSize: 18),
+                            style: TextStyle(
+                              fontSize: 24,
+                              color: Colors.white,
+                              shadows: [
+                                Shadow(
+                                  color: Colors.white,
+                                  offset: Offset(0, 0),
+                                  blurRadius: 8,
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
@@ -165,7 +186,8 @@ class MyApp extends StatelessWidget {
             }
           },
         ),
-        bottomNavigationBar: NewNavBar(itemSelectedCallback: dataService.carregar),
+        bottomNavigationBar:
+            NewNavBar(itemSelectedCallback: dataService.carregar),
       ),
     );
   }
@@ -222,11 +244,12 @@ class _DataTableWidgetState extends State<DataTableWidget> {
   void sortDataObjects(int columnIndex) {
     setState(() {
       if (columnIndex == 0) {
-        // Sort by "Nome" column
         if (_isColumnSortedAscending) {
-          widget.jsonObjects.sort((a, b) => a[widget.propertyNames[columnIndex]].compareTo(b[widget.propertyNames[columnIndex]]));
+          widget.jsonObjects.sort((a, b) => a[widget.propertyNames[columnIndex]]
+              .compareTo(b[widget.propertyNames[columnIndex]]));
         } else {
-          widget.jsonObjects.sort((a, b) => b[widget.propertyNames[columnIndex]].compareTo(a[widget.propertyNames[columnIndex]]));
+          widget.jsonObjects.sort((a, b) => b[widget.propertyNames[columnIndex]]
+              .compareTo(a[widget.propertyNames[columnIndex]]));
         }
         _isColumnSortedAscending = !_isColumnSortedAscending;
       }
@@ -259,7 +282,9 @@ class _DataTableWidgetState extends State<DataTableWidget> {
                 cells: List<DataCell>.generate(
                   widget.propertyNames.length,
                   (cellIndex) => DataCell(
-                    Text(widget.jsonObjects[index][widget.propertyNames[cellIndex]].toString()),
+                    Text(widget.jsonObjects[index]
+                            [widget.propertyNames[cellIndex]]
+                        .toString()),
                   ),
                 ),
               ),
