@@ -123,7 +123,9 @@ class MyApp extends StatelessWidget {
               builder: (_, value, __) {
                 switch (value['status']) {
                   case TableStatus.idle:
-                    return Center(child: Text("Toque algum botão, abaixo..."));
+                    return Center(
+                        child: Text(
+                            "TOQUE EM ALGUM BOTÃO ABAIXO PARA CARREGAR SUAS TABELAS"));
 
                   case TableStatus.loading:
                     return Center(child: CircularProgressIndicator());
@@ -197,7 +199,6 @@ class ListWidget extends HookWidget {
         () {
           if (controller.position.pixels ==
               controller.position.maxScrollExtent) {
-
             if (_scrollEndedCallback is Function) _scrollEndedCallback();
           }
         },
