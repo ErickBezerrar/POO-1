@@ -197,7 +197,6 @@ class ListWidget extends HookWidget {
         () {
           if (controller.position.pixels ==
               controller.position.maxScrollExtent) {
-            print('end reached');
 
             if (_scrollEndedCallback is Function) _scrollEndedCallback();
           }
