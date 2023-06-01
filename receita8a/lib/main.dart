@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 enum TableStatus { idle, loading, ready, error }
+
 enum ItemType { beer, coffee, nation, none }
 
 class DataService {
@@ -115,7 +116,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         home: Scaffold(
           appBar: AppBar(
-            title: const Text("Dicas"),
+            title: const Text("Meu Aplicativo"),
           ),
           body: ValueListenableBuilder(
               valueListenable: dataService.tableStateNotifier,
