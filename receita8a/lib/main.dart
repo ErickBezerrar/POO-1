@@ -14,6 +14,8 @@ class DataService {
     'itemType': ItemType.none,
   });
 
+  final ValueNotifier<int> itemCountNotifier = ValueNotifier(0); 
+
   Future<void> carregar(int index) async {
     final funcoes = [carregarCafes, carregarCervejas, carregarNacoes];
     await funcoes[index]();
@@ -84,6 +86,8 @@ class DataService {
         'propertyNames': propertyNames,
         'columnNames': columnNames,
       };
+
+      itemCountNotifier.value = jsonObjects.length;
     } catch (error) {
       tableStateNotifier.value = {
         'status': TableStatus.error,
@@ -112,83 +116,108 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        theme: ThemeData(primarySwatch: Colors.deepPurple),
-        debugShowCheckedModeBanner: false,
-        home: Scaffold(
-          appBar: AppBar(
-            title: const Text("Meu Aplicativo"),
-          ),
-          body: ValueListenableBuilder(
-              valueListenable: dataService.tableStateNotifier,
-              builder: (_, value, __) {
-                switch (value['status']) {
-                  case TableStatus.idle:
-                    return Center(
+      theme: ThemeData(primarySwatch: Colors.deepPurple),
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text("Meu Aplicativo"),
+        ),
+        body: Column(
+          children: [
+            Expanded(
+              child: ValueListenableBuilder(
+                valueListenable: dataService.tableStateNotifier,
+                builder: (_, value, __) {
+                  switch (value['status']) {
+                    case TableStatus.idle:
+                      return Center(
                         child: Text(
-                            "TOQUE EM ALGUM BOTÃO ABAIXO PARA CARREGAR SUAS TABELAS"));
+                          "TOQUE EM ALGUM BOTÃO ABAIXO PARA CARREGAR SUAS TABELAS",
+                        ),
+                      );
 
-                  case TableStatus.loading:
-                    return Center(child: CircularProgressIndicator());
+                    case TableStatus.loading:
+                      return Center(child: CircularProgressIndicator());
 
-                  case TableStatus.ready:
-                    return ListWidget(
-                      jsonObjects: value['dataObjects'],
-                      propertyNames: value['propertyNames'],
-                      scrollEndedCallback: functionsMap[value['itemType']],
-                    );
+                    case TableStatus.ready:
+                      return ListWidget(
+                        jsonObjects: value['dataObjects'],
+                        propertyNames: value['propertyNames'],
+                        scrollEndedCallback: functionsMap[value['itemType']],
+                      );
 
-                  case TableStatus.error:
-                    return Text("Lascou");
-                }
+                    case TableStatus.error:
+                      return Text("Lascou");
+                  }
 
-                return Text("...");
-              }),
-          bottomNavigationBar:
-              NewNavBar(itemSelectedCallback: dataService.carregar),
-        ));
+                  return Text("...");
+                },
+              ),
+            ),
+            const Divider(height: 5, thickness: 2),
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: ValueListenableBuilder(
+                valueListenable: dataService.itemCountNotifier,
+                builder: (_, itemCount, __) {
+                  return Text('Itens totais: $itemCount'); 
+                },
+              ),
+            ),
+          ],
+        ),
+        bottomNavigationBar: NewNavBar(itemSelectedCallback: dataService.carregar),
+      ),
+    );
   }
 }
 
 class NewNavBar extends HookWidget {
-  final _itemSelectedCallback;
+  final dynamic _itemSelectedCallback;
 
   NewNavBar({itemSelectedCallback})
-      : _itemSelectedCallback = itemSelectedCallback ?? (int) {}
+      : _itemSelectedCallback = itemSelectedCallback ?? ((int index) {}) {}
 
   @override
   Widget build(BuildContext context) {
     var state = useState(1);
 
     return BottomNavigationBar(
-        onTap: (index) {
-          state.value = index;
+      onTap: (index) {
+        state.value = index;
 
-          _itemSelectedCallback(index);
-        },
-        currentIndex: state.value,
-        items: const [
-          BottomNavigationBarItem(
-            label: "Cafés",
-            icon: Icon(Icons.coffee_outlined),
-          ),
-          BottomNavigationBarItem(
-              label: "Cervejas", icon: Icon(Icons.local_drink_outlined)),
-          BottomNavigationBarItem(
-              label: "Nações", icon: Icon(Icons.flag_outlined))
-        ]);
+        _itemSelectedCallback(index);
+      },
+      currentIndex: state.value,
+      items: const [
+        BottomNavigationBarItem(
+          label: "Cafés",
+          icon: Icon(Icons.coffee_outlined),
+        ),
+        BottomNavigationBarItem(
+          label: "Cervejas",
+          icon: Icon(Icons.local_drink_outlined),
+        ),
+        BottomNavigationBarItem(
+          label: "Nações",
+          icon: Icon(Icons.flag_outlined),
+        ),
+      ],
+    );
   }
 }
+
 
 class ListWidget extends HookWidget {
   final dynamic _scrollEndedCallback;
   final List jsonObjects;
   final List<String> propertyNames;
 
-  ListWidget(
-      {this.jsonObjects = const [],
-      this.propertyNames = const [],
-      void Function()? scrollEndedCallback})
-      : _scrollEndedCallback = scrollEndedCallback ?? false;
+  ListWidget({
+    this.jsonObjects = const [],
+    this.propertyNames = const [],
+    void Function()? scrollEndedCallback,
+  }) : _scrollEndedCallback = scrollEndedCallback ?? false;
 
   @override
   Widget build(BuildContext context) {
@@ -197,8 +226,7 @@ class ListWidget extends HookWidget {
     useEffect(() {
       controller.addListener(
         () {
-          if (controller.position.pixels ==
-              controller.position.maxScrollExtent) {
+          if (controller.position.pixels == controller.position.maxScrollExtent) {
             if (_scrollEndedCallback is Function) _scrollEndedCallback();
           }
         },
@@ -227,13 +255,19 @@ class ListWidget extends HookWidget {
             .join(" - ");
 
         return Card(
-            shadowColor: Theme.of(context).primaryColor,
-            child: Column(children: [
+          shadowColor: Theme.of(context).primaryColor,
+          child: Column(
+            children: [
               SizedBox(height: 10),
-              Text("${title}\n", style: TextStyle(fontWeight: FontWeight.bold)),
+              Text(
+                "${title}\n",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
               Text(content),
-              SizedBox(height: 10)
-            ]));
+              SizedBox(height: 10),
+            ],
+          ),
+        );
       },
     );
   }
