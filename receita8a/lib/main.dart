@@ -120,7 +120,18 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
-          title: const Text("Meu Aplicativo"),
+          title: ValueListenableBuilder(
+            valueListenable: dataService.itemCountNotifier,
+            builder: (_, itemCount, __) {
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Meu Aplicativo'),
+                  Text('Itens totais: $itemCount'),
+                ],
+              );
+            },
+          ),
         ),
         body: Column(
           children: [
@@ -155,15 +166,6 @@ class MyApp extends StatelessWidget {
               ),
             ),
             const Divider(height: 5, thickness: 2),
-            Padding(
-              padding: const EdgeInsets.all(10),
-              child: ValueListenableBuilder(
-                valueListenable: dataService.itemCountNotifier,
-                builder: (_, itemCount, __) {
-                  return Text('Itens totais: $itemCount'); 
-                },
-              ),
-            ),
           ],
         ),
         bottomNavigationBar: NewNavBar(itemSelectedCallback: dataService.carregar),
