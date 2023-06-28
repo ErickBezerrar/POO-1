@@ -6,30 +6,17 @@ class Options {
   static const List<int> options = [3, 5, 7];
 }
 
-class MyCustomScrollBehavior extends ScrollBehavior {
-  @override
-  Widget buildViewportChrome(
-    BuildContext context,
-    Widget child,
-    AxisDirection axisDirection,
-  ) {
-    return GlowingOverscrollIndicator(
-      child: child,
-      axisDirection: axisDirection,
-      color: Colors.deepPurple, 
-      showLeading: false, 
-      showTrailing: false, 
-    );
-  }
-}
-
 class MyApp extends StatelessWidget {
   final List<int> loadOptions = Options.options;
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      theme: ThemeData(primarySwatch: Colors.deepPurple),
+      theme: ThemeData(
+        primarySwatch: Colors.blue, // Altere a cor primária para azul
+        colorScheme: ThemeData().colorScheme.copyWith(secondary: Colors.deepPurple), // Altere a cor de destaque para roxo
+        scaffoldBackgroundColor: Colors.white, // Altere a cor de fundo para branco
+      ),
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
@@ -77,30 +64,37 @@ class MyApp extends StatelessWidget {
 }
 
 class NewNavBar extends HookWidget {
-  final _itemSelectedCallback;
+  final Function(int) itemSelectedCallback;
 
-  NewNavBar({itemSelectedCallback})
-      : _itemSelectedCallback = itemSelectedCallback ?? (int) {}
+  NewNavBar({required this.itemSelectedCallback});
 
   @override
   Widget build(BuildContext context) {
     var state = useState(1);
     return BottomNavigationBar(
-        onTap: (index) {
-          state.value = index;
-          _itemSelectedCallback(index);
-        },
-        currentIndex: state.value,
-        items: const [
-          BottomNavigationBarItem(
-            label: "Cafés",
-            icon: Icon(Icons.coffee_outlined),
-          ),
-          BottomNavigationBarItem(
-              label: "Cervejas", icon: Icon(Icons.local_drink_outlined)),
-          BottomNavigationBarItem(
-              label: "Nações", icon: Icon(Icons.flag_outlined))
-        ]);
+      backgroundColor: Colors.blue, // Altere a cor de fundo para azul
+      selectedItemColor: Colors.white, // Altere a cor do item selecionado para branco
+      unselectedItemColor: Colors.white70, // Altere a cor dos itens não selecionados para branco com transparência
+      onTap: (index) {
+        state.value = index;
+        itemSelectedCallback(index);
+      },
+      currentIndex: state.value,
+      items: const [
+        BottomNavigationBarItem(
+          label: "Cafés",
+          icon: Icon(Icons.coffee_outlined),
+        ),
+        BottomNavigationBarItem(
+          label: "Cervejas",
+          icon: Icon(Icons.local_drink_outlined),
+        ),
+        BottomNavigationBarItem(
+          label: "Nações",
+          icon: Icon(Icons.flag_outlined),
+        ),
+      ],
+    );
   }
 }
 
@@ -109,27 +103,36 @@ class DataTableWidget extends StatelessWidget {
   final List<String> columnNames;
   final List<String> propertyNames;
 
-  DataTableWidget(
-      {this.jsonObjects = const [],
-      this.columnNames = const [],
-      this.propertyNames = const []});
+  DataTableWidget({this.jsonObjects = const [], this.columnNames = const [], this.propertyNames = const []});
 
   @override
   Widget build(BuildContext context) {
     return DataTable(
+      headingRowColor: MaterialStateColor.resolveWith((states) => Colors.blue), // Altere a cor da linha de cabeçalho para azul
+      dataRowColor: MaterialStateColor.resolveWith((states) => Colors.white), // Altere a cor das linhas de dados para branco
+      dataRowHeight: 50, // Altere a altura das linhas de dados
       columns: columnNames
-        .map((name) => DataColumn(
-          onSort: (columnIndex, ascending) => 
-            dataService.ordenarEstadoAtual(propertyNames[columnIndex]),
-          label: Expanded(
-            child: Text(name,
-              style: TextStyle(fontStyle: FontStyle.italic)))))
-        .toList(),
+          .map(
+            (name) => DataColumn(
+              onSort: (columnIndex, ascending) =>
+                  dataService.ordenarEstadoAtual(propertyNames[columnIndex]),
+              label: Expanded(
+                child: Text(name, style: TextStyle(fontStyle: FontStyle.italic)),
+              ),
+            ),
+          )
+          .toList(),
       rows: jsonObjects
-        .map((obj) => DataRow(
-          cells: propertyNames
-            .map((propName) => DataCell(Text(obj[propName])))
-            .toList()))
-        .toList());
+          .map(
+            (obj) => DataRow(
+              cells: propertyNames
+                  .map(
+                    (propName) => DataCell(Text(obj[propName])),
+                  )
+                  .toList(),
+            ),
+          )
+          .toList(),
+    );
   }
 }
