@@ -16,12 +16,14 @@ class MyApp extends HookWidget {
           actions: [
             PopupMenuButton(
               initialValue: state.value,
-              itemBuilder: (_) => valores.map(
-                (num) => PopupMenuItem(
-                  value: num,
-                  child: Text("Carregar $num itens por vez"),
-                ),
-              ).toList(),
+              itemBuilder: (_) => valores
+                  .map(
+                    (num) => PopupMenuItem(
+                      value: num,
+                      child: Text("Carregar $num itens por vez"),
+                    ),
+                  )
+                  .toList(),
               onSelected: (number) {
                 state.value = number;
                 dataService.numberOfItems = number;
@@ -59,7 +61,7 @@ class MyApp extends HookWidget {
             return Text("...");
           },
         ),
-        bottomNavigationBar: NewNavBar(itemSelectedCallback: dataService.carregar),
+        bottomNavigationBar: NewNavBar(itemSelectedCallback: dataService.load),
       ),
     );
   }
@@ -71,9 +73,13 @@ class NewNavBar extends HookWidget {
   NewNavBar({itemSelectedCallback})
       : _itemSelectedCallback = itemSelectedCallback ?? (int) {}
 
+  static const int indexCarros = 0;
+  static const int indexBarcos = 1;
+  static const int indexFilmes = 2;
+
   @override
   Widget build(BuildContext context) {
-    var state = useState(1);
+    var state = useState(indexCarros);
 
     return BottomNavigationBar(
       onTap: (index) {
@@ -81,18 +87,18 @@ class NewNavBar extends HookWidget {
         _itemSelectedCallback(index);
       },
       currentIndex: state.value,
-      items: const [
+      items: [
         BottomNavigationBarItem(
-          label: "Cafés",
-          icon: Icon(Icons.coffee_outlined),
+          label: "Carros",
+          icon: Icon(Icons.car_crash_outlined),
         ),
         BottomNavigationBarItem(
-          label: "Cervejas",
-          icon: Icon(Icons.local_drink_outlined),
+          label: "Barcos",
+          icon: Icon(Icons.directions_boat_outlined),
         ),
         BottomNavigationBarItem(
-          label: "Nações",
-          icon: Icon(Icons.flag_outlined),
+          label: "Filmes",
+          icon: Icon(Icons.movie_outlined),
         ),
       ],
     );
@@ -104,26 +110,37 @@ class DataTableWidget extends StatelessWidget {
   final List<String> columnNames;
   final List<String> propertyNames;
 
-  DataTableWidget({this.jsonObjects = const [], this.columnNames = const [], this.propertyNames = const []});
+  DataTableWidget(
+      {this.jsonObjects = const [],
+      this.columnNames = const [],
+      this.propertyNames = const []});
 
   @override
   Widget build(BuildContext context) {
     return DataTable(
-      columns: columnNames.map(
-        (name) => DataColumn(
-          onSort: (columnIndex, ascending) => dataService.ordenarEstadoAtual(propertyNames[columnIndex]),
-          label: Expanded(
-            child: Text(name, style: TextStyle(fontStyle: FontStyle.italic)),
-          ),
-        ),
-      ).toList(),
-      rows: jsonObjects.map(
-        (obj) => DataRow(
-          cells: propertyNames.map(
-            (propName) => DataCell(Text(obj[propName])),
-          ).toList(),
-        ),
-      ).toList(),
+      columns: columnNames
+          .map(
+            (name) => DataColumn(
+              onSort: (columnIndex, ascending) =>
+                  dataService.sortCurrentState(propertyNames[columnIndex]),
+              label: Expanded(
+                child:
+                    Text(name, style: TextStyle(fontStyle: FontStyle.italic)),
+              ),
+            ),
+          )
+          .toList(),
+      rows: jsonObjects
+          .map(
+            (obj) => DataRow(
+              cells: propertyNames
+                  .map(
+                    (propName) => DataCell(Text(obj[propName])),
+                  )
+                  .toList(),
+            ),
+          )
+          .toList(),
     );
   }
 }
