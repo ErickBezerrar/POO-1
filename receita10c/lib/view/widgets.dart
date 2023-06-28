@@ -16,14 +16,12 @@ class MyApp extends HookWidget {
           actions: [
             PopupMenuButton(
               initialValue: state.value,
-              itemBuilder: (_) => valores
-                  .map(
-                    (num) => PopupMenuItem(
-                      value: num,
-                      child: Text("Carregar $num itens por vez"),
-                    ),
-                  )
-                  .toList(),
+              itemBuilder: (_) => valores.map(
+                (num) => PopupMenuItem(
+                  value: num,
+                  child: Text("Carregar $num itens por vez"),
+                ),
+              ).toList(),
               onSelected: (number) {
                 state.value = number;
                 dataService.numberOfItems = number;
@@ -110,37 +108,26 @@ class DataTableWidget extends StatelessWidget {
   final List<String> columnNames;
   final List<String> propertyNames;
 
-  DataTableWidget(
-      {this.jsonObjects = const [],
-      this.columnNames = const [],
-      this.propertyNames = const []});
+  DataTableWidget({this.jsonObjects = const [], this.columnNames = const [], this.propertyNames = const []});
 
   @override
   Widget build(BuildContext context) {
     return DataTable(
-      columns: columnNames
-          .map(
-            (name) => DataColumn(
-              onSort: (columnIndex, ascending) =>
-                  dataService.sortCurrentState(propertyNames[columnIndex]),
-              label: Expanded(
-                child:
-                    Text(name, style: TextStyle(fontStyle: FontStyle.italic)),
-              ),
-            ),
-          )
-          .toList(),
-      rows: jsonObjects
-          .map(
-            (obj) => DataRow(
-              cells: propertyNames
-                  .map(
-                    (propName) => DataCell(Text(obj[propName])),
-                  )
-                  .toList(),
-            ),
-          )
-          .toList(),
+      columns: columnNames.map(
+        (name) => DataColumn(
+          onSort: (columnIndex, ascending) => dataService.sortCurrentState(propertyNames[columnIndex]),
+          label: Expanded(
+            child: Text(name, style: TextStyle(fontStyle: FontStyle.italic)),
+          ),
+        ),
+      ).toList(),
+      rows: jsonObjects.map(
+        (obj) => DataRow(
+          cells: propertyNames.map(
+            (propName) => DataCell(Text(obj[propName])),
+          ).toList(),
+        ),
+      ).toList(),
     );
   }
 }

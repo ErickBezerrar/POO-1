@@ -48,12 +48,9 @@ class DataService {
 
     Sorter sorter = Sorter();
 
-    var sortedObjects =
-        sorter.sortItemWithCallback(objects, (current, next) {
+    var sortedObjects = sorter.sortItemWithCallback(objects, (current, next) {
       final correctOrder = true ? [current, next] : [next, current];
-      return correctOrder[0][property]
-              .compareTo(correctOrder[1][property]) >
-          0;
+      return correctOrder[0][property].compareTo(correctOrder[1][property]) > 0;
     });
 
     emitSortedState(sortedObjects, property);
@@ -63,7 +60,8 @@ class DataService {
     return Uri(
       scheme: 'https',
       host: 'random-data-api.com',
-      path: 'api/${type.toString().split('.').last}/random_${type.toString().split('.').last}',
+      path:
+          'api/${type.toString().split('.').last}/random_${type.toString().split('.').last}',
       queryParameters: {'size': '$_numberOfItems'},
     );
   }
@@ -95,7 +93,8 @@ class DataService {
     };
   }
 
-  void emitReadyState(EntityType type, var json, List<String> propertyNames, List<String> columnNames) {
+  void emitReadyState(EntityType type, var json, List<String> propertyNames,
+      List<String> columnNames) {
     tableStateNotifier.value = {
       'itemType': type,
       'status': TableStatus.ready,
@@ -146,8 +145,8 @@ class DataService {
 final dataService = DataService();
 
 class Sorter {
-  List sortItemWithCallback(List item,
-      bool Function(dynamic, dynamic) shouldSwapCurrentWithNext) {
+  List sortItemWithCallback(
+      List item, bool Function(dynamic, dynamic) shouldSwapCurrentWithNext) {
     List sortedItems = List.of(item);
     bool swappedAtLeastOnce;
 
