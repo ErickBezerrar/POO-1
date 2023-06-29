@@ -8,20 +8,40 @@ var valores = [3, 7, 15];
 
 enum TableStatus { idle, loading, ready, error }
 
-enum EntityType {
-  car,
-  boat,
-  movie,
+enum ItemType {
+  beer,
+  coffee,
+  nation,
+  none;
+
+  String get asString => '$name';
+
+  List<String> get columns => this == coffee
+      ? ["Nome", "Origem", "Tipo"]
+      : this == beer
+          ? ["Nome", "Estilo", "IBU"]
+          : this == nation
+              ? ["Nome", "Capital", "Idioma", "Esporte"]
+              : [];
+
+  List<String> get properties => this == coffee
+      ? ["blend_name", "origin", "variety"]
+      : this == beer
+          ? ["name", "style", "ibu"]
+          : this == nation
+              ? ["nationality", "capital", "language", "national_sport"]
+              : [];
 }
 
 class DataService {
-  static const int MAX_N_ITEMS = 15;
-  static const int MIN_N_ITEMS = 3;
-  static const int DEFAULT_N_ITEMS = 7;
+  
+  static int get MAX_N_ITEMS => valores[2];
+  static int get MIN_N_ITEMS => valores[0];
+  static int get DEFAULT_N_ITEMS => valores[1];
 
   int _numberOfItems = DEFAULT_N_ITEMS;
 
-  set numberOfItems(int n) {
+  set numberOfItems(n) {
     _numberOfItems = n < 0
         ? MIN_N_ITEMS
         : n > MAX_N_ITEMS
@@ -32,42 +52,41 @@ class DataService {
   final ValueNotifier<Map<String, dynamic>> tableStateNotifier = ValueNotifier({
     'status': TableStatus.idle,
     'dataObjects': [],
-    'itemType': null,
+    'itemType': ItemType.none
   });
 
-  void load(int index) {
-    final types = [EntityType.car, EntityType.boat, EntityType.movie];
+  void carregar(index) {
+    final params = [ItemType.coffee, ItemType.beer, ItemType.nation];
 
-    loadByType(types[index]);
+    carregarPorTipo(params[index]);
   }
 
-  void sortCurrentState(String property) {
-    List objects = tableStateNotifier.value['dataObjects'] ?? [];
+  void ordenarEstadoAtual(String propriedade) {
 
-    if (objects.isEmpty) return;
+    List objetos = tableStateNotifier.value['dataObjects'] ?? [];
 
-    Sorter sorter = Sorter();
+    if (objetos == []) return;
 
-    var sortedObjects = sorter.sortItemWithCallback(objects, (current, next) {
-      final correctOrder = true ? [current, next] : [next, current];
-      return correctOrder[0][property].compareTo(correctOrder[1][property]) > 0;
-    });
+    Ordenador ord = Ordenador();
 
-    emitSortedState(sortedObjects, property);
+    var objetosOrdenados = [];
+
+    objetosOrdenados = ord.ordenarItem(objetos, DecididorJson(propriedade));
+  
+    emitirEstadoOrdenado(objetosOrdenados, propriedade);
   }
 
-  Uri buildUri(EntityType type) {
+  Uri montarUri(ItemType type) {
     return Uri(
-      scheme: 'https',
-      host: 'random-data-api.com',
-      path:
-          'api/${type.toString().split('.').last}/random_${type.toString().split('.').last}',
-      queryParameters: {'size': '$_numberOfItems'},
-    );
+        scheme: 'https',
+        host: 'random-data-api.com',
+        path: 'api/${type.asString}/random_${type.asString}',
+        queryParameters: {'size': '$_numberOfItems'});
   }
 
-  Future<List<dynamic>> accessApi(Uri uri) async {
+  Future<List<dynamic>> acessarApi(Uri uri) async {
     var jsonString = await http.read(uri);
+
     var json = jsonDecode(jsonString);
 
     json = [...tableStateNotifier.value['dataObjects'], ...json];
@@ -75,97 +94,83 @@ class DataService {
     return json;
   }
 
-  void emitSortedState(List sortedObjects, String property) {
-    var state = Map<String, dynamic>.from(tableStateNotifier.value);
+  void emitirEstadoOrdenado(List objetosOrdenados, String propriedade) {
+    var estado = Map<String, dynamic>.from(tableStateNotifier.value);
 
-    state['dataObjects'] = sortedObjects;
-    state['sortCriteria'] = property;
-    state['ascending'] = true;
+    estado['dataObjects'] = objetosOrdenados;
 
-    tableStateNotifier.value = state;
+    estado['sortCriteria'] = propriedade;
+
+    estado['ascending'] = true;
+
+    tableStateNotifier.value = estado;
   }
 
-  void emitLoadingState(EntityType type) {
+  void emitirEstadoCarregando(ItemType type) {
     tableStateNotifier.value = {
       'status': TableStatus.loading,
       'dataObjects': [],
-      'itemType': type,
+      'itemType': type
     };
   }
 
-  void emitReadyState(EntityType type, var json, List<String> propertyNames,
-      List<String> columnNames) {
+  void emitirEstadoPronto(ItemType type, var json) {
     tableStateNotifier.value = {
       'itemType': type,
       'status': TableStatus.ready,
       'dataObjects': json,
-      'propertyNames': propertyNames,
-      'columnNames': columnNames,
+      'propertyNames': type.properties,
+      'columnNames': type.columns
     };
   }
 
-  bool hasOngoingRequest() =>
+  bool temRequisicaoEmCurso() =>
       tableStateNotifier.value['status'] == TableStatus.loading;
 
-  bool didChangeRequestedType(EntityType type) =>
+  bool mudouTipoDeItemRequisitado(ItemType type) =>
       tableStateNotifier.value['itemType'] != type;
 
-  void loadByType(EntityType type) async {
-    // Ignore request if there is an ongoing request
-    if (hasOngoingRequest()) return;
+  void carregarPorTipo(ItemType type) async {
+    //ignorar solicitação se uma requisição já estiver em curso
 
-    if (didChangeRequestedType(type)) {
-      emitLoadingState(type);
+    if (temRequisicaoEmCurso()) return;
+
+    if (mudouTipoDeItemRequisitado(type)) {
+      emitirEstadoCarregando(type);
     }
 
-    var uri = buildUri(type);
-    var json = await accessApi(uri);
+    var uri = montarUri(type);
 
-    List<String> propertyNames;
-    List<String> columnNames;
+    var json = await acessarApi(uri); //, type);
 
-    if (type == EntityType.car) {
-      propertyNames = ["model", "brand", "speed"];
-      columnNames = ["Modelo", "Marca", "Velocidade"];
-    } else if (type == EntityType.boat) {
-      propertyNames = ["name", "type", "length"];
-      columnNames = ["Nome", "Tipo", "Comprimento"];
-    } else if (type == EntityType.movie) {
-      propertyNames = ["title", "director", "genre"];
-      columnNames = ["Título", "Diretor", "Gênero"];
-    } else {
-      propertyNames = [];
-      columnNames = [];
-    }
-
-    emitReadyState(type, json, propertyNames, columnNames);
+    emitirEstadoPronto(type, json);
   }
 }
 
 final dataService = DataService();
 
-class Sorter {
-  List sortItemWithCallback(
-      List item, bool Function(dynamic, dynamic) shouldSwapCurrentWithNext) {
-    List sortedItems = List.of(item);
-    bool swappedAtLeastOnce;
+class DecididorJson extends Decididor{
 
-    do {
-      swappedAtLeastOnce = false;
+  final String prop;
+  final bool crescente;
+  DecididorJson( this.prop, [this.crescente = true]);
 
-      for (int i = 0; i < sortedItems.length - 1; i++) {
-        var current = sortedItems[i];
-        var next = sortedItems[i + 1];
+  @override
 
-        if (shouldSwapCurrentWithNext(current, next)) {
-          var temp = sortedItems[i];
-          sortedItems[i] = sortedItems[i + 1];
-          sortedItems[i + 1] = temp;
-          swappedAtLeastOnce = true;
-        }
-      }
-    } while (swappedAtLeastOnce);
+  bool precisaTrocarAtualPeloProximo(atual, proximo) {
 
-    return sortedItems;
+    try{
+      final ordemCorreta = crescente ? [atual, proximo]: [proximo, atual] ;
+      return ordemCorreta[0][prop].compareTo(ordemCorreta[1][prop]) > 0;
+      
+    }catch (error){
+
+      return false;
+
+    }    
+
   }
-}
+
+
+
+} 
