@@ -66,10 +66,10 @@ class MyApp extends HookWidget {
 }
 
 class NewNavBar extends HookWidget {
-  final _itemSelectedCallback;
+  final Function(int) _itemSelectedCallback;
 
-  NewNavBar({itemSelectedCallback})
-      : _itemSelectedCallback = itemSelectedCallback ?? (int) {}
+  NewNavBar({required Function(int) itemSelectedCallback})
+      : _itemSelectedCallback = itemSelectedCallback;
 
   static const int indexCarros = 0;
   static const int indexBarcos = 1;
@@ -102,6 +102,7 @@ class NewNavBar extends HookWidget {
     );
   }
 }
+
 
 class DataTableWidget extends StatelessWidget {
   final List jsonObjects;
