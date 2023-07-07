@@ -73,16 +73,34 @@ class DataService {
 
     bool precisaTrocarAtualPeloProximo(atual, proximo) {
       final ordemCorreta = crescente ? [atual, proximo] : [proximo, atual];
-      return ordemCorreta[0][propriedade]
-              .compareTo(ordemCorreta[1][propriedade]) >
-          0;
+      return ordemCorreta[0][propriedade].compareTo(ordemCorreta[1][propriedade]) > 0;
     }
 
     //objetosOrdenados = ord.ordenarItem(objetos, DecididorJson(propriedade));
-    objetosOrdenados = ord.ordenarItem2(objetos, precisaTrocarAtualPeloProximo);
+    objetosOrdenados = ord.ordenarItem2(
+      objetos,
+      precisaTrocarAtualPeloProximo
+    );
 
     emitirEstadoOrdenado(objetosOrdenados, propriedade);
   }
+
+  void filtrarEstadoAtual(String filtrar) {
+    List objetos = tableStateNotifier.value['dataObjects'] ?? [];
+
+    if (objetos.isEmpty) return;
+
+    List objetosFiltrados = [];
+
+    for (var objeto in objetos) {
+      if (objeto.toString().toLowerCase().contains(filtrar.toLowerCase())) {
+        objetosFiltrados.add(objeto);
+      }
+    }
+
+    emitirEstadoFiltrado(objetosFiltrados);
+  }
+
 
   Uri montarUri(ItemType type) {
     return Uri(
@@ -131,6 +149,15 @@ class DataService {
       'columnNames': type.columns
     };
   }
+
+  void emitirEstadoFiltrado(List objetosFiltrados) {
+    var estado = Map<String, dynamic>.from(tableStateNotifier.value);
+
+    estado['dataObjects'] = objetosFiltrados;
+
+    tableStateNotifier.value = estado;
+  }
+
 
   bool temRequisicaoEmCurso() =>
       tableStateNotifier.value['status'] == TableStatus.loading;

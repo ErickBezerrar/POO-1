@@ -192,10 +192,23 @@ class MyAppBar extends HookWidget {
 
     return AppBar( 
 
-          title: const Text("Dicas"),
-
           actions:[
-
+          
+            Flexible(
+              child: TextField(
+                onChanged: (value) {
+                  print('New text: $value');
+                  dataService.filtrarEstadoAtual(value);
+                },
+            
+                decoration: const InputDecoration(
+                  hintText: 'Digite algo...',
+                  
+                ),
+                          
+              ),
+            ),
+                       
             PopupMenuButton(
               initialValue: state.value, 
 
