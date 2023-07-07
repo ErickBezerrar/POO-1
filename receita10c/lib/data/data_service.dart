@@ -34,7 +34,6 @@ enum ItemType {
 }
 
 class DataService {
-  
   static int get MAX_N_ITEMS => valores[2];
   static int get MIN_N_ITEMS => valores[0];
   static int get DEFAULT_N_ITEMS => valores[1];
@@ -61,8 +60,7 @@ class DataService {
     carregarPorTipo(params[index]);
   }
 
-  void ordenarEstadoAtual(String propriedade) {
-
+  void ordenarEstadoAtual(String propriedade, [bool cresc = true]) {
     List objetos = tableStateNotifier.value['dataObjects'] ?? [];
 
     if (objetos == []) return;
@@ -71,8 +69,18 @@ class DataService {
 
     var objetosOrdenados = [];
 
-    objetosOrdenados = ord.ordenarItem(objetos, DecididorJson(propriedade));
-  
+    bool crescente = cresc;
+
+    bool precisaTrocarAtualPeloProximo(atual, proximo) {
+      final ordemCorreta = crescente ? [atual, proximo] : [proximo, atual];
+      return ordemCorreta[0][propriedade]
+              .compareTo(ordemCorreta[1][propriedade]) >
+          0;
+    }
+
+    //objetosOrdenados = ord.ordenarItem(objetos, DecididorJson(propriedade));
+    objetosOrdenados = ord.ordenarItem2(objetos, precisaTrocarAtualPeloProximo);
+
     emitirEstadoOrdenado(objetosOrdenados, propriedade);
   }
 
@@ -149,28 +157,18 @@ class DataService {
 
 final dataService = DataService();
 
-class DecididorJson extends Decididor{
-
+class DecididorJson extends Decididor {
   final String prop;
   final bool crescente;
-  DecididorJson( this.prop, [this.crescente = true]);
+  DecididorJson(this.prop, [this.crescente = true]);
 
   @override
-
   bool precisaTrocarAtualPeloProximo(atual, proximo) {
-
-    try{
-      final ordemCorreta = crescente ? [atual, proximo]: [proximo, atual] ;
+    try {
+      final ordemCorreta = crescente ? [atual, proximo] : [proximo, atual];
       return ordemCorreta[0][prop].compareTo(ordemCorreta[1][prop]) > 0;
-      
-    }catch (error){
-
+    } catch (error) {
       return false;
-
-    }    
-
+    }
   }
-
-
-
-} 
+}
