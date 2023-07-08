@@ -45,7 +45,8 @@ class MyApp extends HookWidget {
             return Text("...");
           },
         ),
-        bottomNavigationBar: NewNavBar(itemSelectedCallback: dataService.carregar),
+        bottomNavigationBar:
+            NewNavBar(itemSelectedCallback: dataService.carregar),
       ),
     );
   }
@@ -54,7 +55,8 @@ class MyApp extends HookWidget {
 class NewNavBar extends HookWidget {
   final _itemSelectedCallback;
 
-  NewNavBar({itemSelectedCallback}) : _itemSelectedCallback = itemSelectedCallback ?? (int) {}
+  NewNavBar({itemSelectedCallback})
+      : _itemSelectedCallback = itemSelectedCallback ?? (int) {}
 
   @override
   Widget build(BuildContext context) {
@@ -89,7 +91,10 @@ class DataTableWidget extends HookWidget {
   final List<String> columnNames;
   final List<String> propertyNames;
 
-  DataTableWidget({this.jsonObjects = const [], this.columnNames = const [], this.propertyNames = const []});
+  DataTableWidget(
+      {this.jsonObjects = const [],
+      this.columnNames = const [],
+      this.propertyNames = const []});
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +111,8 @@ class DataTableWidget extends HookWidget {
               sortColumnIndex.value = columnIndex;
               sortAscending.value = !sortAscending.value;
 
-              dataService.ordenarEstadoAtual(propertyNames[columnIndex], sortAscending.value);
+              dataService.ordenarEstadoAtual(
+                  propertyNames[columnIndex], sortAscending.value);
             },
             label: Expanded(
               child: Text(
@@ -162,11 +168,13 @@ class MyAppBar extends HookWidget {
               ),
               focusedBorder: OutlineInputBorder(
                 borderSide: BorderSide(
-                  color: Colors.blue, // Alterando a cor da borda quando o campo está em foco
+                  color: Colors
+                      .blue, // Alterando a cor da borda quando o campo está em foco
                 ),
               ),
               filled: true,
-              fillColor: Colors.white, // Alterando a cor do campo de texto preenchido
+              fillColor:
+                  Colors.white, // Alterando a cor do campo de texto preenchido
             ),
           ),
         ),
