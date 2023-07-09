@@ -7,7 +7,7 @@ class MyApp extends HookWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-        primaryColor: Colors.blue, // Altera a cor primária para azul
+        primaryColor: Colors.blue, 
       ),
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -75,15 +75,15 @@ class NewNavBar extends HookWidget {
       items: const [
         BottomNavigationBarItem(
           label: "Cafés",
-          icon: Icon(Icons.coffee_outlined, color: Colors.green), // Altera a cor do ícone para verde
+          icon: Icon(Icons.coffee_outlined, color: Colors.green), 
         ),
         BottomNavigationBarItem(
           label: "Cervejas",
-          icon: Icon(Icons.local_drink_outlined, color: Colors.blue), // Altera a cor do ícone para azul
+          icon: Icon(Icons.local_drink_outlined, color: Colors.blue), 
         ),
         BottomNavigationBarItem(
           label: "Nações",
-          icon: Icon(Icons.flag_outlined, color: Colors.red), // Altera a cor do ícone para vermelho
+          icon: Icon(Icons.flag_outlined, color: Colors.red), 
         ),
       ],
     );
@@ -109,7 +109,7 @@ class DataTableWidget extends HookWidget {
     return DataTable(
       sortAscending: sortAscending.value,
       sortColumnIndex: sortColumnIndex.value,
-      dataRowColor: MaterialStateColor.resolveWith((states) => Colors.grey), // Altera a cor de fundo das células para cinza claro
+      dataRowColor: MaterialStateColor.resolveWith((states) => Colors.grey),
       columns: columnNames
           .map(
             (name) => DataColumn(
@@ -124,7 +124,7 @@ class DataTableWidget extends HookWidget {
                   name,
                   style: TextStyle(
                     fontStyle: FontStyle.italic,
-                    color: Colors.black, // Altera a cor do texto da coluna para preto
+                    color: Colors.black, 
                   ),
                 ),
               ),
@@ -140,7 +140,7 @@ class DataTableWidget extends HookWidget {
                       Text(
                         obj[propName],
                         style: TextStyle(
-                          color: Colors.black, // Altera a cor do texto das células para preto
+                          color: Colors.black, 
                         ),
                       ),
                     ),
@@ -170,8 +170,8 @@ class MyAppBar extends HookWidget {
             onChanged: (value) {
               _callback(value);
             },
-            cursorColor: Colors.orange, // Altera a cor do cursor para laranja
-            style: TextStyle(color: Colors.black), // Altera a cor do texto para preto
+            cursorColor: Colors.orange, 
+            style: TextStyle(color: Colors.black), 
             decoration: const InputDecoration(
               hintText: 'Digite algo...',
             ),
