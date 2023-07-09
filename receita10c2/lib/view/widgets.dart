@@ -33,8 +33,8 @@ class MyApp extends HookWidget {
                       scrollDirection: Axis.horizontal,
                       child: DataTableWidget(
                         jsonObjects: value['dataObjects'],
-                        columnNames: value['columnNames'],
                         propertyNames: value['propertyNames'],
+                        columnNames: value['columnNames'],
                       ),
                     ),
                   ),
@@ -45,7 +45,8 @@ class MyApp extends HookWidget {
             return Text("...");
           },
         ),
-        bottomNavigationBar: NewNavBar(itemSelectedCallback: dataService.carregar),
+        bottomNavigationBar:
+            NewNavBar(itemSelectedCallback: dataService.carregar),
       ),
     );
   }
@@ -90,11 +91,10 @@ class DataTableWidget extends HookWidget {
   final List<String> columnNames;
   final List<String> propertyNames;
 
-  DataTableWidget({
-    this.jsonObjects = const [],
-    this.columnNames = const [],
-    this.propertyNames = const [],
-  });
+  DataTableWidget(
+      {this.jsonObjects = const [],
+      this.columnNames = const [],
+      this.propertyNames = const []});
 
   @override
   Widget build(BuildContext context) {
@@ -104,40 +104,38 @@ class DataTableWidget extends HookWidget {
     return DataTable(
       sortAscending: sortAscending.value,
       sortColumnIndex: sortColumnIndex.value,
-      columns: columnNames
-          .asMap()
-          .entries
-          .map(
-            (entry) => DataColumn(
-              label: Expanded(
-                child: Text(
-                  entry.value,
-                  style: TextStyle(
-                    fontStyle: FontStyle.italic,
-                    fontWeight: FontWeight.bold,
-                  ),
+      columns: columnNames.map(
+        (name) {
+          return DataColumn(
+            onSort: (columnIndex, ascending) {
+              sortColumnIndex.value = columnIndex;
+              sortAscending.value = !sortAscending.value;
+
+              dataService.ordenarEstadoAtual(
+                  propertyNames[columnIndex], sortAscending.value);
+            },
+            label: Expanded(
+              child: Text(
+                name,
+                style: TextStyle(
+                  fontStyle: FontStyle.italic,
+                  fontWeight: FontWeight.bold, // Definindo o texto em negrito
                 ),
               ),
-              onSort: (columnIndex, ascending) {
-                sortColumnIndex.value = columnIndex;
-                sortAscending.value = ascending;
-
-                dataService.ordenarEstadoAtual(
-                  propertyNames[columnIndex],
-                  ascending,
-                );
-              },
             ),
-          )
-          .toList(),
+          );
+        },
+      ).toList(),
       rows: jsonObjects.map(
-        (obj) => DataRow(
-          cells: propertyNames
-              .map(
-                (propName) => DataCell(Text(obj[propName])),
-              )
-              .toList(),
-        ),
+        (obj) {
+          return DataRow(
+            cells: propertyNames.map(
+              (propName) {
+                return DataCell(Text(obj[propName]));
+              },
+            ).toList(),
+          );
+        },
       ).toList(),
     );
   }
@@ -149,33 +147,34 @@ class MyAppBar extends HookWidget {
   @override
   Widget build(BuildContext context) {
     var state = useState(7);
-    var filterTextController = useTextEditingController();
 
     return AppBar(
       actions: [
         Flexible(
           child: TextField(
-            controller: filterTextController,
             onChanged: (value) {
+              print('New text: $value');
               dataService.filtrarEstadoAtual(value);
             },
             style: TextStyle(
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.bold, // Definindo o texto em negrito
             ),
             decoration: InputDecoration(
               hintText: 'Digite algo...',
               border: OutlineInputBorder(
                 borderSide: BorderSide(
-                  color: Colors.white,
+                  color: Colors.white, // Alterando a cor da borda
                 ),
               ),
               focusedBorder: OutlineInputBorder(
                 borderSide: BorderSide(
-                  color: Colors.blue,
+                  color: Colors
+                      .blue, // Alterando a cor da borda quando o campo está em foco
                 ),
               ),
               filled: true,
-              fillColor: Colors.white,
+              fillColor:
+                  Colors.white, // Alterando a cor do campo de texto preenchido
             ),
           ),
         ),
@@ -188,7 +187,7 @@ class MyAppBar extends HookWidget {
                 child: Text(
                   "Carregar $num itens por vez",
                   style: TextStyle(
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.bold, // Definindo o texto em negrito
                   ),
                 ),
               );

@@ -54,9 +54,6 @@ class DataService {
     'itemType': ItemType.none
   });
 
-  String filtrar = '';
-  String propriedadeOrdenacao = '';
-
   void carregar(index) {
     final params = [ItemType.coffee, ItemType.beer, ItemType.nation];
 
@@ -64,14 +61,46 @@ class DataService {
   }
 
   void ordenarEstadoAtual(String propriedade, [bool cresc = true]) {
-    propriedadeOrdenacao = propriedade;
-    tableStateNotifier.value = Map<String, dynamic>.from(tableStateNotifier.value);
+    List objetos = tableStateNotifier.value['dataObjects'] ?? [];
+
+    if (objetos == []) return;
+
+    Ordenador ord = Ordenador();
+
+    var objetosOrdenados = [];
+
+    bool crescente = cresc;
+
+    bool precisaTrocarAtualPeloProximo(atual, proximo) {
+      final ordemCorreta = crescente ? [atual, proximo] : [proximo, atual];
+      return ordemCorreta[0][propriedade].compareTo(ordemCorreta[1][propriedade]) > 0;
+    }
+
+    //objetosOrdenados = ord.ordenarItem(objetos, DecididorJson(propriedade));
+    objetosOrdenados = ord.ordenarItem2(
+      objetos,
+      precisaTrocarAtualPeloProximo
+    );
+
+    emitirEstadoOrdenado(objetosOrdenados, propriedade);
   }
 
   void filtrarEstadoAtual(String filtrar) {
-    this.filtrar = filtrar;
-    tableStateNotifier.value = Map<String, dynamic>.from(tableStateNotifier.value);
+    List objetos = tableStateNotifier.value['dataObjects'] ?? [];
+
+    if (objetos.isEmpty) return;
+
+    List objetosFiltrados = [];
+
+    for (var objeto in objetos) {
+      if (objeto.toString().toLowerCase().contains(filtrar.toLowerCase())) {
+        objetosFiltrados.add(objeto);
+      }
+    }
+
+    emitirEstadoFiltrado(objetosFiltrados);
   }
+
 
   Uri montarUri(ItemType type) {
     return Uri(
@@ -112,20 +141,10 @@ class DataService {
   }
 
   void emitirEstadoPronto(ItemType type, var json) {
-    List<dynamic> filteredObjects = json;
-    if (filtrar.isNotEmpty) {
-      filteredObjects = json.where((obj) => obj['name'].toLowerCase().contains(filtrar.toLowerCase())).toList();
-    }
-
-    List<dynamic> sortedObjects = filteredObjects;
-    if (propriedadeOrdenacao.isNotEmpty) {
-      sortedObjects.sort((a, b) => a[propriedadeOrdenacao].compareTo(b[propriedadeOrdenacao]));
-    }
-
     tableStateNotifier.value = {
       'itemType': type,
       'status': TableStatus.ready,
-      'dataObjects': sortedObjects,
+      'dataObjects': json,
       'propertyNames': type.properties,
       'columnNames': type.columns
     };
@@ -138,6 +157,7 @@ class DataService {
 
     tableStateNotifier.value = estado;
   }
+
 
   bool temRequisicaoEmCurso() =>
       tableStateNotifier.value['status'] == TableStatus.loading;
@@ -163,3 +183,19 @@ class DataService {
 }
 
 final dataService = DataService();
+
+class DecididorJson extends Decididor {
+  final String prop;
+  final bool crescente;
+  DecididorJson(this.prop, [this.crescente = true]);
+
+  @override
+  bool precisaTrocarAtualPeloProximo(atual, proximo) {
+    try {
+      final ordemCorreta = crescente ? [atual, proximo] : [proximo, atual];
+      return ordemCorreta[0][prop].compareTo(ordemCorreta[1][prop]) > 0;
+    } catch (error) {
+      return false;
+    }
+  }
+}
