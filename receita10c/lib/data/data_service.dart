@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../util/decididor.dart';
-import '../util/ordenador.dart';
 
 var valores = [3, 7, 15];
 
@@ -40,6 +39,8 @@ class DataService {
 
   int _numberOfItems = DEFAULT_N_ITEMS;
 
+  var objetoOriginal = [];
+
   set numberOfItems(n) {
     _numberOfItems = n < 0
         ? MIN_N_ITEMS
@@ -54,9 +55,6 @@ class DataService {
     'itemType': ItemType.none
   });
 
-  String filtrar = '';
-  String propriedadeOrdenacao = '';
-
   void carregar(index) {
     final params = [ItemType.coffee, ItemType.beer, ItemType.nation];
 
@@ -64,13 +62,56 @@ class DataService {
   }
 
   void ordenarEstadoAtual(String propriedade, [bool cresc = true]) {
-    propriedadeOrdenacao = propriedade;
-    tableStateNotifier.value = Map<String, dynamic>.from(tableStateNotifier.value);
+    List objetos = tableStateNotifier.value['dataObjects'] ?? [];
+
+    if (objetos == []) return;
+
+    var objetosOrdenados = objetos;
+
+    bool crescente = cresc;
+
+    bool precisaTrocarAtualPeloProximo(atual, proximo) {
+      final ordemCorreta = crescente ? [atual, proximo] : [proximo, atual];
+      return ordemCorreta[0][propriedade]
+              .compareTo(ordemCorreta[1][propriedade]) >
+          0;
+    }
+
+  objetosOrdenados.sort((a, b) {
+    if (precisaTrocarAtualPeloProximo(a, b)) {
+      return 1; // Retorna um valor positivo para trocar a posição de a e b
+    } 
+    
+    else if (precisaTrocarAtualPeloProximo(b, a)) {
+      return -1; // Retorna um valor negativo para manter a posição de a e b
+    } 
+    
+    else {
+      return 0; // Retorna 0 se a e b são iguais em termos de ordenação
+    }
+
+  });
+
+    emitirEstadoOrdenado(objetosOrdenados, propriedade);
   }
 
   void filtrarEstadoAtual(String filtrar) {
-    this.filtrar = filtrar;
-    tableStateNotifier.value = Map<String, dynamic>.from(tableStateNotifier.value);
+    List objetos = objetoOriginal;
+
+    if (objetos.isEmpty) return;
+
+    List objetosFiltrados = objetoOriginal;
+
+    if (filtrar != '') {
+      objetosFiltrados = objetos.where((objeto) =>
+      objeto.toString().toLowerCase().contains(filtrar.toLowerCase())).toList();
+    }
+
+    else {
+      objetosFiltrados = objetoOriginal;
+    }
+
+    emitirEstadoFiltrado(objetosFiltrados);
   }
 
   Uri montarUri(ItemType type) {
@@ -112,23 +153,15 @@ class DataService {
   }
 
   void emitirEstadoPronto(ItemType type, var json) {
-    List<dynamic> filteredObjects = json;
-    if (filtrar.isNotEmpty) {
-      filteredObjects = json.where((obj) => obj['name'].toLowerCase().contains(filtrar.toLowerCase())).toList();
-    }
-
-    List<dynamic> sortedObjects = filteredObjects;
-    if (propriedadeOrdenacao.isNotEmpty) {
-      sortedObjects.sort((a, b) => a[propriedadeOrdenacao].compareTo(b[propriedadeOrdenacao]));
-    }
-
     tableStateNotifier.value = {
       'itemType': type,
       'status': TableStatus.ready,
-      'dataObjects': sortedObjects,
+      'dataObjects': json,
       'propertyNames': type.properties,
       'columnNames': type.columns
     };
+
+    objetoOriginal = json;
   }
 
   void emitirEstadoFiltrado(List objetosFiltrados) {
@@ -146,8 +179,7 @@ class DataService {
       tableStateNotifier.value['itemType'] != type;
 
   void carregarPorTipo(ItemType type) async {
-    //ignorar solicitação se uma requisição já estiver em curso
-
+    
     if (temRequisicaoEmCurso()) return;
 
     if (mudouTipoDeItemRequisitado(type)) {
@@ -163,3 +195,19 @@ class DataService {
 }
 
 final dataService = DataService();
+
+class DecididorJson extends Decididor {
+  final String prop;
+  final bool crescente;
+  DecididorJson(this.prop, [this.crescente = true]);
+
+  @override
+  bool precisaTrocarAtualPeloProximo(atual, proximo) {
+    try {
+      final ordemCorreta = crescente ? [atual, proximo] : [proximo, atual];
+      return ordemCorreta[0][prop].compareTo(ordemCorreta[1][prop]) > 0;
+    } catch (error) {
+      return false;
+    }
+  }
+}
