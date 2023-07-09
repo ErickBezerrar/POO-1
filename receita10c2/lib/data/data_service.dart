@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../util/decididor.dart';
-import '../util/ordenador.dart';
 
 var valores = [3, 7, 15];
 
@@ -40,6 +39,8 @@ class DataService {
 
   int _numberOfItems = DEFAULT_N_ITEMS;
 
+  var objetoOriginal = [];
+
   set numberOfItems(n) {
     _numberOfItems = n < 0
         ? MIN_N_ITEMS
@@ -65,42 +66,48 @@ class DataService {
 
     if (objetos == []) return;
 
-    Ordenador ord = Ordenador();
-
-    var objetosOrdenados = [];
+    var objetosOrdenados = objetos;
 
     bool crescente = cresc;
 
     bool precisaTrocarAtualPeloProximo(atual, proximo) {
       final ordemCorreta = crescente ? [atual, proximo] : [proximo, atual];
-      return ordemCorreta[0][propriedade].compareTo(ordemCorreta[1][propriedade]) > 0;
+      return ordemCorreta[0][propriedade]
+              .compareTo(ordemCorreta[1][propriedade]) >
+          0;
     }
 
-    //objetosOrdenados = ord.ordenarItem(objetos, DecididorJson(propriedade));
-    objetosOrdenados = ord.ordenarItem2(
-      objetos,
-      precisaTrocarAtualPeloProximo
-    );
+    objetosOrdenados.sort((a, b) {
+      if (precisaTrocarAtualPeloProximo(a, b)) {
+        return 1; // Retorna um valor positivo para trocar a posição de a e b
+      } else if (precisaTrocarAtualPeloProximo(b, a)) {
+        return -1; // Retorna um valor negativo para manter a posição de a e b
+      } else {
+        return 0; // Retorna 0 se a e b são iguais em termos de ordenação
+      }
+    });
 
     emitirEstadoOrdenado(objetosOrdenados, propriedade);
   }
 
   void filtrarEstadoAtual(String filtrar) {
-    List objetos = tableStateNotifier.value['dataObjects'] ?? [];
+    List objetos = objetoOriginal;
 
     if (objetos.isEmpty) return;
 
-    List objetosFiltrados = [];
+    List objetosFiltrados = objetoOriginal;
 
-    for (var objeto in objetos) {
-      if (objeto.toString().toLowerCase().contains(filtrar.toLowerCase())) {
-        objetosFiltrados.add(objeto);
-      }
+    if (filtrar != '') {
+      objetosFiltrados = objetos
+          .where((objeto) =>
+              objeto.toString().toLowerCase().contains(filtrar.toLowerCase()))
+          .toList();
+    } else {
+      objetosFiltrados = objetoOriginal;
     }
 
     emitirEstadoFiltrado(objetosFiltrados);
   }
-
 
   Uri montarUri(ItemType type) {
     return Uri(
@@ -148,6 +155,8 @@ class DataService {
       'propertyNames': type.properties,
       'columnNames': type.columns
     };
+
+    objetoOriginal = json;
   }
 
   void emitirEstadoFiltrado(List objetosFiltrados) {
@@ -157,7 +166,6 @@ class DataService {
 
     tableStateNotifier.value = estado;
   }
-
 
   bool temRequisicaoEmCurso() =>
       tableStateNotifier.value['status'] == TableStatus.loading;
