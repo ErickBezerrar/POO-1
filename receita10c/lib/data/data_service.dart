@@ -77,20 +77,15 @@ class DataService {
           0;
     }
 
-  objetosOrdenados.sort((a, b) {
-    if (precisaTrocarAtualPeloProximo(a, b)) {
-      return 1; // Retorna um valor positivo para trocar a posição de a e b
-    } 
-    
-    else if (precisaTrocarAtualPeloProximo(b, a)) {
-      return -1; // Retorna um valor negativo para manter a posição de a e b
-    } 
-    
-    else {
-      return 0; // Retorna 0 se a e b são iguais em termos de ordenação
-    }
-
-  });
+    objetosOrdenados.sort((a, b) {
+      if (precisaTrocarAtualPeloProximo(a, b)) {
+        return 1; // Retorna um valor positivo para trocar a posição de a e b
+      } else if (precisaTrocarAtualPeloProximo(b, a)) {
+        return -1; // Retorna um valor negativo para manter a posição de a e b
+      } else {
+        return 0; // Retorna 0 se a e b são iguais em termos de ordenação
+      }
+    });
 
     emitirEstadoOrdenado(objetosOrdenados, propriedade);
   }
@@ -103,11 +98,11 @@ class DataService {
     List objetosFiltrados = objetoOriginal;
 
     if (filtrar != '') {
-      objetosFiltrados = objetos.where((objeto) =>
-      objeto.toString().toLowerCase().contains(filtrar.toLowerCase())).toList();
-    }
-
-    else {
+      objetosFiltrados = objetos
+          .where((objeto) =>
+              objeto.toString().toLowerCase().contains(filtrar.toLowerCase()))
+          .toList();
+    } else {
       objetosFiltrados = objetoOriginal;
     }
 
@@ -179,7 +174,8 @@ class DataService {
       tableStateNotifier.value['itemType'] != type;
 
   void carregarPorTipo(ItemType type) async {
-    
+    //ignorar solicitação se uma requisição já estiver em curso
+
     if (temRequisicaoEmCurso()) return;
 
     if (mudouTipoDeItemRequisitado(type)) {
