@@ -6,47 +6,49 @@ class MyApp extends HookWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        theme: ThemeData(primarySwatch: Colors.deepPurple),
-        debugShowCheckedModeBanner: false,
-        home: Scaffold(
-          appBar: PreferredSize(
-            preferredSize: Size.fromHeight(kToolbarHeight),
-            child: MyAppBar(callback: dataService.filtrarEstadoAtual),
-          ),
-          body: ValueListenableBuilder(
-              valueListenable: dataService.tableStateNotifier,
-              builder: (_, value, __) {
-                switch (value['status']) {
-                  case TableStatus.idle:
-                    return Center(child: Text("Toque em algum botão"));
-
-                  case TableStatus.loading:
-                    return Center(child: CircularProgressIndicator());
-
-                  case TableStatus.ready:
-                    return Container(
-                      width: double.infinity,
-                      height: double.infinity,
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.vertical,
-                        child: SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: DataTableWidget(
-                                jsonObjects: value['dataObjects'],
-                                propertyNames: value['propertyNames'],
-                                columnNames: value['columnNames'])),
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(kToolbarHeight),
+          child: MyAppBar(),
+        ),
+        body: ValueListenableBuilder(
+          valueListenable: dataService.tableStateNotifier,
+          builder: (_, value, __) {
+            switch (value['status']) {
+              case TableStatus.idle:
+                return Center(child: Text("Toque em algum botão"));
+              case TableStatus.loading:
+                return Center(child: CircularProgressIndicator());
+              case TableStatus.ready:
+                return Container(
+                  width: double.infinity,
+                  height: double.infinity,
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: DataTableWidget(
+                        jsonObjects: value['dataObjects'],
+                        propertyNames: value['propertyNames'],
+                        columnNames: value['columnNames'],
                       ),
-                    );
-
-                  case TableStatus.error:
-                    return Text("Lascou");
-                }
-
-                return Text("...");
-              }),
-          bottomNavigationBar:
-              NewNavBar(itemSelectedCallback: dataService.carregar),
-        ));
+                    ),
+                  ),
+                );
+              case TableStatus.error:
+                return Text("Lascou");
+            }
+            return Text("...");
+          },
+        ),
+        bottomNavigationBar:
+            NewNavBar(itemSelectedCallback: dataService.carregar),
+      ),
+    );
   }
 }
 
@@ -61,22 +63,26 @@ class NewNavBar extends HookWidget {
     var state = useState(1);
 
     return BottomNavigationBar(
-        onTap: (index) {
-          state.value = index;
-
-          _itemSelectedCallback(index);
-        },
-        currentIndex: state.value,
-        items: const [
-          BottomNavigationBarItem(
-            label: "Cafés",
-            icon: Icon(Icons.coffee_outlined),
-          ),
-          BottomNavigationBarItem(
-              label: "Cervejas", icon: Icon(Icons.local_drink_outlined)),
-          BottomNavigationBarItem(
-              label: "Nações", icon: Icon(Icons.flag_outlined))
-        ]);
+      onTap: (index) {
+        state.value = index;
+        _itemSelectedCallback(index);
+      },
+      currentIndex: state.value,
+      items: const [
+        BottomNavigationBarItem(
+          label: "Cafés",
+          icon: Icon(Icons.coffee_outlined),
+        ),
+        BottomNavigationBarItem(
+          label: "Cervejas",
+          icon: Icon(Icons.local_drink_outlined),
+        ),
+        BottomNavigationBarItem(
+          label: "Nações",
+          icon: Icon(Icons.flag_outlined),
+        ),
+      ],
+    );
   }
 }
 
@@ -94,105 +100,105 @@ class DataTableWidget extends HookWidget {
   Widget build(BuildContext context) {
     final sortAscending = useState(true);
     final sortColumnIndex = useState(1);
-    final filterText = useState('');
-
-    // Função de classificação da lista
-    void sortList(String propName) {
-      jsonObjects.sort((a, b) {
-        final valueA = a[propName].toString().toLowerCase();
-        final valueB = b[propName].toString().toLowerCase();
-        return sortAscending.value
-            ? valueA.compareTo(valueB)
-            : valueB.compareTo(valueA);
-      });
-    }
-
-    // Função de filtragem da lista
-    List filterList(List list, String searchText) {
-      if (searchText.isEmpty) {
-        return list;
-      } else {
-        return list.where((obj) {
-          final values = propertyNames
-              .map((propName) => obj[propName].toString().toLowerCase())
-              .toList();
-          return values
-              .any((value) => value.contains(searchText.toLowerCase()));
-        }).toList();
-      }
-    }
-
-    useEffect(() {
-      sortList(propertyNames[sortColumnIndex.value]);
-    }, [sortAscending.value, sortColumnIndex.value]);
-
-    final filteredObjects = filterList(jsonObjects, filterText.value);
 
     return DataTable(
       sortAscending: sortAscending.value,
       sortColumnIndex: sortColumnIndex.value,
-      columns: columnNames
-          .asMap()
-          .map((index, name) => MapEntry(
-                index,
-                DataColumn(
-                  onSort: (columnIndex, ascending) {
-                    sortColumnIndex.value = columnIndex;
-                    sortAscending.value = !sortAscending.value;
-                  },
-                  label: Expanded(
-                      child: Text(name,
-                          style: TextStyle(fontStyle: FontStyle.italic))),
+      columns: columnNames.map(
+        (name) {
+          return DataColumn(
+            onSort: (columnIndex, ascending) {
+              sortColumnIndex.value = columnIndex;
+              sortAscending.value = !sortAscending.value;
+
+              dataService.ordenarEstadoAtual(
+                  propertyNames[columnIndex], sortAscending.value);
+            },
+            label: Expanded(
+              child: Text(
+                name,
+                style: TextStyle(
+                  fontStyle: FontStyle.italic,
+                  fontWeight: FontWeight.bold, // Definindo o texto em negrito
                 ),
-              ))
-          .values
-          .toList(),
-      rows: filteredObjects.map((obj) {
-        return DataRow(
-          cells: propertyNames
-              .map(
-                (propName) => DataCell(Text(obj[propName])),
-              )
-              .toList(),
-        );
-      }).toList(),
+              ),
+            ),
+          );
+        },
+      ).toList(),
+      rows: jsonObjects.map(
+        (obj) {
+          return DataRow(
+            cells: propertyNames.map(
+              (propName) {
+                return DataCell(Text(obj[propName]));
+              },
+            ).toList(),
+          );
+        },
+      ).toList(),
     );
   }
 }
 
 class MyAppBar extends HookWidget {
-  final _callback;
-
-  MyAppBar({callback}) : _callback = callback ?? (int) {}
+  const MyAppBar({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     var state = useState(7);
 
-    return AppBar(actions: [
-      Flexible(
-        child: TextField(
-          onChanged: (value) {
-            _callback(value);
-          },
-          decoration: const InputDecoration(
-            hintText: 'Digite algo...',
+    return AppBar(
+      actions: [
+        Flexible(
+          child: TextField(
+            onChanged: (value) {
+              print('New text: $value');
+              dataService.filtrarEstadoAtual(value);
+            },
+            style: TextStyle(
+              fontWeight: FontWeight.bold, // Definindo o texto em negrito
+            ),
+            decoration: InputDecoration(
+              hintText: 'Digite algo...',
+              border: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Colors.white, // Alterando a cor da borda
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Colors
+                      .blue, // Alterando a cor da borda quando o campo está em foco
+                ),
+              ),
+              filled: true,
+              fillColor:
+                  Colors.white, // Alterando a cor do campo de texto preenchido
+            ),
           ),
         ),
-      ),
-      PopupMenuButton(
-        initialValue: state.value,
-        itemBuilder: (_) => valores
-            .map((num) => PopupMenuItem(
-                  value: num,
-                  child: Text("Carregar $num itens por vez"),
-                ))
-            .toList(),
-        onSelected: (number) {
-          state.value = number;
-          dataService.numberOfItems = number;
-        },
-      )
-    ]);
+        PopupMenuButton(
+          initialValue: state.value,
+          itemBuilder: (_) => valores.map(
+            (num) {
+              return PopupMenuItem(
+                value: num,
+                child: Text(
+                  "Carregar $num itens por vez",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold, // Definindo o texto em negrito
+                  ),
+                ),
+              );
+            },
+          ).toList(),
+          onSelected: (number) {
+            state.value = number;
+            dataService.numberOfItems = number;
+          },
+        ),
+      ],
+    );
   }
 }
