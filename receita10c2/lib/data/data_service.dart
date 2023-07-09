@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import '../util/decididor.dart';
 
 var valores = [3, 7, 15];
 
@@ -79,11 +78,11 @@ class DataService {
 
     objetosOrdenados.sort((a, b) {
       if (precisaTrocarAtualPeloProximo(a, b)) {
-        return 1; 
+        return 1;
       } else if (precisaTrocarAtualPeloProximo(b, a)) {
-        return -1; 
+        return -1;
       } else {
-        return 0; 
+        return 0;
       }
     });
 
@@ -174,7 +173,6 @@ class DataService {
       tableStateNotifier.value['itemType'] != type;
 
   void carregarPorTipo(ItemType type) async {
-
     if (temRequisicaoEmCurso()) return;
 
     if (mudouTipoDeItemRequisitado(type)) {
@@ -190,19 +188,3 @@ class DataService {
 }
 
 final dataService = DataService();
-
-class DecididorJson extends Decididor {
-  final String prop;
-  final bool crescente;
-  DecididorJson(this.prop, [this.crescente = true]);
-
-  @override
-  bool precisaTrocarAtualPeloProximo(atual, proximo) {
-    try {
-      final ordemCorreta = crescente ? [atual, proximo] : [proximo, atual];
-      return ordemCorreta[0][prop].compareTo(ordemCorreta[1][prop]) > 0;
-    } catch (error) {
-      return false;
-    }
-  }
-}
